@@ -52,4 +52,4 @@ if __name__ == "__main__":
         divs.append(d)
 
     with open("out.html", "w") as f:
-        print(common.render("inequality.html", scripts, divs, ["."]), file=f)
+        print(common.render("inequality.j2", scripts, divs, ["."]), file=f)
