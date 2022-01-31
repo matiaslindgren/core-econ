@@ -1,0 +1,16 @@
+{% from 'macros.j2' import head, bokeh_lib %}
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ head("this desc", "this title") }}
+    {{ bokeh_lib(bokeh_version) }}
+    {% for script in scripts %}
+        {{ script }}
+    {% endfor %}
+{% endblock %}
+
+{% block body %}
+    {% for div in divs %}
+        {{ div }}
+    {% endfor %}
+{% endblock %}

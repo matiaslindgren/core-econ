@@ -1,14 +1,10 @@
 import pandas as pd
-import numpy as np
-import mistune
-
-
-data = pd.read_csv("data/GCIPrawdata.csv", header=2)
-data["Inequality"] = data["Decile 10 Income"] / data["Decile 1 Income"]
 
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.embed import components
+
+import common
 
 
 def plot_inequality(data):
@@ -33,37 +29,27 @@ def plot_inequality(data):
     return plot
 
 
-def render(scripts, divs):
-    return "\n".join(
+if __name__ == "__main__":
+    scripts = []
+    divs = []
+
+    now = common.now_str()
+    divs.extend(
         [
-            "<html>",
-            "<head>",
-            '<meta charset="utf-8">',
-            "\n".join(scripts),
-            "</head>",
-            "<body>",
-            "\n".join(divs),
-            "</body>",
-            "</html>",
+            "<h1>Inequality as rich-to-poor ratio by GDP ($ PPP)</h1>",
+            f"<b>{now}</b>",
         ]
     )
 
-
-if __name__ == "__main__":
-    scripts = [
-        '<script src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.0.min.js" crossorigin="anonymous"></script>',
-        '<script src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.0.min.js" crossorigin="anonymous"></script>',
-        '<script src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.0.min.js" crossorigin="anonymous"></script>',
-        '<script src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-2.4.0.min.js" crossorigin="anonymous"></script>',
-        '<script src="https://cdn.bokeh.org/bokeh/release/bokeh-mathjax-2.4.0.min.js" crossorigin="anonymous"></script>',
-    ]
-    divs = []
+    data = pd.read_csv("data/GCIPrawdata.csv", header=2)
+    data["Inequality"] = data["Decile 10 Income"] / data["Decile 1 Income"]
 
     for year in (1980, 1990, 2014):
         plot = plot_inequality(data[data.Year == year])
         s, d = components(plot)
         scripts.append(s)
+        divs.append(f"<h2>{year}</h2>")
         divs.append(d)
 
     with open("out.html", "w") as f:
-        print(render(scripts, divs), file=f)
+        print(common.render("inequality.html", scripts, divs, ["."]), file=f)

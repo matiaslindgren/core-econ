@@ -1,0 +1,23 @@
+{% macro head(description, title) %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{ description }}">
+  <title>{{ title }}</title>
+{% endmacro %}
+
+{% macro bokeh_lib(version) %}
+  {% set deps = [
+      'bokeh',
+      'bokeh-widgets',
+      'bokeh-tables',
+      'bokeh-gl',
+      'bokeh-mathjax',
+    ]
+  %}
+  {% for dep in deps %}
+    <script
+        src="https://cdn.bokeh.org/bokeh/release/{{ dep }}-{{ version }}.min.js"
+        crossorigin="anonymous">
+    </script>
+ {% endfor %}
+{% endmacro %}
