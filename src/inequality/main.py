@@ -1,8 +1,9 @@
-import pandas as pd
+import sys
 
+import pandas as pd
+from bokeh.embed import components
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
-from bokeh.embed import components
 
 import common
 
@@ -29,27 +30,28 @@ def plot_inequality(data):
     return plot
 
 
-if __name__ == "__main__":
+def main(name):
     scripts = []
     divs = []
 
-    now = common.now_str()
     divs.extend(
         [
             "<h1>Inequality as rich-to-poor ratio by GDP ($ PPP)</h1>",
-            f"<b>{now}</b>",
+            f"<b>{common.now()}</b>",
         ]
     )
 
-    data = pd.read_csv("data/GCIPrawdata.csv", header=2)
+    data = common.read_csv("GCIPrawdata.csv", header=2)
     data["Inequality"] = data["Decile 10 Income"] / data["Decile 1 Income"]
 
     for year in (1980, 1990, 2014):
         plot = plot_inequality(data[data.Year == year])
         s, d = components(plot)
         scripts.append(s)
-        divs.append(f"<h2>{year}</h2>")
-        divs.append(d)
+        divs.extend([f"<h2>{year}</h2>", d])
 
-    with open("out.html", "w") as f:
-        print(common.render("inequality.j2", scripts, divs, ["."]), file=f)
+    print(common.render(name, scripts, divs))
+
+
+if __name__ == "__main__":
+    main(sys.argv[1])
