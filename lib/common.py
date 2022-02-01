@@ -1,5 +1,6 @@
 import datetime
 import pathlib
+import sys
 
 import bs4
 import jinja2
@@ -34,3 +35,7 @@ def render(name, scripts, divs):
 def read_csv(filename, **kwargs):
     csv_path = pathlib.Path(".").parent.joinpath("data", filename)
     return pd.read_csv(csv_path, **kwargs)
+
+
+def eprint(*a, **kw):
+    print(*a, **dict(file=sys.stderr, **kw))
