@@ -1,9 +1,10 @@
 import sys
+import textwrap
 from math import pi
 
 import pandas as pd
+import altair as alt
 from bokeh.embed import components
-import bokeh.palettes
 from bokeh.models import (
     ColumnDataSource,
     BasicTicker,
@@ -12,33 +13,17 @@ from bokeh.models import (
     PrintfTickFormatter,
 )
 from bokeh.plotting import figure
+from matplotlib import cm
+from matplotlib.colors import rgb2hex
 
 import common
 
 
-def plot_inequality(data):
-    data = data[["Country", "Inequality"]].copy().dropna().sort_values("Inequality")
-    data.Inequality = data.Inequality.round(1).apply("{:.1f}".format)
-    data.Country = data.Country.astype(str)
-    plot = figure(
-        width=1000,
-        height=2000,
-        toolbar_location=None,
-        y_range=data.Country,
-        tooltips=[("Inequality", "@Inequality"), ("Country", "@Country")],
-    )
-    plot.hbar(
-        y="Country",
-        right="Inequality",
-        source=ColumnDataSource(data),
-        height=2 / 3,
-    )
-    plot.ygrid.grid_line_color = None
-    plot.outline_line_color = None
-    return plot
-
-
-def plot_income(data):
+def plot_income(data, year):
+    low, high = data["Mean Income"].min(), data["Mean Income"].max()
+    country_ord = {
+        c: i for i, c in enumerate(data.sort_values("Mean Income").Country.unique())
+    }
     data = data.melt(
         id_vars=["Country", "Year"],
         value_vars=[f"Decile {i} Income" for i in range(1, 11)],
@@ -47,61 +32,90 @@ def plot_income(data):
     )
     data.Decile = data.Decile.str.split(expand=True)[1].astype(int)
     data = data.set_index(["Country", "Year"])
-    data = data.xs(1985, level="Year")
+    data = data.xs(year, level="Year")
     data = data.pivot(columns="Decile", values="Income")
-
-    countries = data.index.to_list()
+    countries = sorted(data.index, key=country_ord.get)
     income_deciles = data.columns.astype(str).to_list()
-
-    common.eprint(data)
     data = pd.DataFrame(data.stack(), columns=["Income"]).reset_index()
 
-    colors = bokeh.palettes.YlGn[9][::-1]
-    mapper = LinearColorMapper(
-        palette=colors, low=data.Income.min(), high=data.Income.max()
-    )
+    cmap = cm.get_cmap("YlGn", len(income_deciles))
+    colors = [rgb2hex(cmap(i)) for i in range(cmap.N)]
+    mapper = LinearColorMapper(palette=colors, low=low, high=high)
 
-    TOOLS = "hover,save,pan,box_zoom,reset,wheel_zoom"
-
-    common.eprint(countries, income_deciles)
+    scale = 2
+    font_px = 16
+    rect_px = 20
 
     p = figure(
         title="income",
-        y_range=countries,
         x_range=income_deciles,
+        y_range=countries,
         x_axis_location="above",
-        height=3000,
-        width=1200,
-        tools=TOOLS,
-        toolbar_location="below",
+        height=len(countries) * rect_px,
+        width=len(income_deciles) * rect_px,
+        tools="hover",
+        toolbar_location=None,
         tooltips=[("Country", "@Country"), ("Income", "@Income (@Decile. decile)")],
     )
 
+    common.eprint(countries, income_deciles, p.width, p.height)
     p.grid.grid_line_color = None
     p.axis.axis_line_color = None
     p.axis.major_tick_line_color = None
-    p.axis.major_label_text_font_size = "24px"
+    p.axis.major_label_text_font_size = f"{font_px}px"
+    p.axis.major_label_standoff = 0
 
     p.rect(
-        y="Country",
         x="Decile",
-        width=1,
-        height=1,
+        y="Country",
+        width=rect_px,
+        height=rect_px,
         source=data,
+        width_units="screen",
+        height_units="screen",
         fill_color={"field": "Income", "transform": mapper},
         line_color=None,
     )
 
-    color_bar = ColorBar(
-        color_mapper=mapper,
-        major_label_text_font_size="24px",
-        ticker=BasicTicker(desired_num_ticks=len(colors)),
-        formatter=PrintfTickFormatter(format="%d"),
-        label_standoff=6,
-        border_line_color=None,
-    )
-    p.add_layout(color_bar, "right")
+    # color_bar = ColorBar(
+    #     color_mapper=mapper,
+    #     major_label_text_font_size=f"{font_px}px",
+    #     ticker=BasicTicker(desired_num_ticks=len(colors)),
+    #     formatter=PrintfTickFormatter(format="{:,d}$"),
+    #     label_standoff=6,
+    #     border_line_color=None,
+    # )
+    # p.add_layout(color_bar, "above")
+
     return p
+
+
+def plot_income_altair(data, year):
+    data = data.melt(
+        id_vars=["Country", "Year"],
+        value_vars=[f"Decile {i} Income" for i in range(1, 11)],
+        value_name="Income",
+        var_name="Decile",
+    )
+    data.Decile = data.Decile.str.split(expand=True)[1].astype(int)
+    data = data.set_index(["Country", "Year"])
+    data = data.xs(year, level="Year")
+    data = data.reset_index()
+    plot = (
+        alt.Chart(data)
+        .mark_rect()
+        .encode(x="Decile:O", y="Country:N", color="Income:Q")
+        .properties(width=600)
+    )
+    html = f"""
+        <div id="vis"></div>
+        <script type="text/javascript">
+          var spec = {plot.to_json()};
+          var opt = {{"renderer": "canvas", "actions": false}};
+          vegaEmbed("#vis", spec, opt);
+        </script>
+    """
+    return textwrap.dedent(html)
 
 
 def main(name):
@@ -122,10 +136,11 @@ def main(name):
     #     scripts.append(s)
     #     divs.extend([f"<h2>{year}</h2>", d])
 
-    plot = plot_income(data)
-    s, d = components(plot)
-    scripts.append(s)
-    divs.append(d)
+    html = plot_income_altair(data, 1990)
+    # plot = plot_income(data, 1990)
+    # s, d = components(plot)
+    # scripts.append(s)
+    divs.append(html)
     print(common.render(name, scripts, divs))
     return data
 

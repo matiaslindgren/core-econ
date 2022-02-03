@@ -1,16 +1,16 @@
-{% from 'macros.j2' import head, bokeh_lib %}
+{% from 'macros.j2' import head, vega_lib %}
 {% extends 'base.html' %}
 
 {% block head %}
     {{ head("this desc", "this title") }}
-    {{ bokeh_lib(bokeh_version) }}
-    {% for script in scripts %}
-        {{ script }}
-    {% endfor %}
+    {{ vega_lib() }}
 {% endblock %}
 
 {% block body %}
     {% for div in divs %}
         {{ div }}
+    {% endfor %}
+    {% for script in scripts %}
+        {{ script }}
     {% endfor %}
 {% endblock %}
