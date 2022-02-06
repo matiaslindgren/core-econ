@@ -25,10 +25,11 @@ def plot_income(data):
     income = income.merge(inequality, how="left", on=["Country", "Year"])
     income = income.drop(["index"], axis="columns")
 
-    common.eprint(income.shape)
-
     font_config = dict(
-        titleFontSize=16, labelFontSize=14, labelFont="Serif", titleFont="Serif"
+        titleFontSize=16,
+        labelFontSize=14,
+        titleFont="Georgia",
+        labelFont="Georgia",
     )
     width, height = 2, 16
     width_ratio = 0.1
@@ -129,7 +130,11 @@ def main(name):
             "<br>",
         ]
     )
-    data = common.read_csv(DATA_URL, header=2)
+    data = common.read_data(
+        fn="read_csv",
+        url=DATA_URL,
+        header=2,
+    )
     html = plot_income(data)
     divs.append(html)
     print(common.render(name, scripts, divs))

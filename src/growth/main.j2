@@ -1,0 +1,14 @@
+{% from 'macros.j2' import head, vega_lib, vega_embed %}
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ head("Visualizing growth rate", "Growth rate") }}
+    {{ vega_lib() }}
+{% endblock %}
+
+{% block body %}
+    {% for div in divs %}
+        {{ div }}
+    {% endfor %}
+    {{ vega_embed() }}
+{% endblock %}

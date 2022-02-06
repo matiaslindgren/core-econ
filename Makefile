@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 PYTHON := python3.9
 DST := ./out
-SRC := inequality
+SRC := inequality growth
 
 .PHONY: $(SRC) index
 

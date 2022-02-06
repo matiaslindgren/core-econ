@@ -38,17 +38,13 @@ def render(name, scripts, divs):
 
 
 @memory.cache
-def read_csv(url, **kwargs):
-    if url.startswith("http"):
+def read_data(fn, url=None, filename=None, **kwargs):
+    if url:
         eprint(f"downloading {url}")
-        res = requests.get(url, timeout=10)
-        res.raise_for_status()
-        assert (
-            res.encoding == "utf-8"
-        ), f"unexpected encoding {res.encoding} in response from GET to {url}"
-        return pd.read_csv(io.StringIO(res.text), **kwargs)
-    csv_path = pathlib.Path(".").parent.joinpath("data", filename)
-    return pd.read_csv(csv_path, **kwargs)
+        return getattr(pd, fn)(url, **kwargs)
+    if filename:
+        csv_path = pathlib.Path(".").parent.joinpath("data", filename)
+        return getattr(pd, fn)(csv_path, **kwargs)
 
 
 def eprint(*a, file=sys.stderr, **kw):
@@ -71,9 +67,14 @@ def altair_chart_to_html(chart, renderer="canvas", actions=False, **opt):
 
 
 def configure_altair_fonts(chart, config):
+    title_config = {}
+    if "titleFontSize" in config:
+        title_config["fontSize"] = config["titleFontSize"]
+    if "titleFont" in config:
+        title_config["font"] = config["titleFont"]
     return (
         chart.configure_axis(**config)
         .configure_legend(**config)
         .configure_header(**config)
-        .configure_title(fontSize=config["titleFontSize"], font=config["titleFont"])
+        .configure_title(**title_config)
     )
