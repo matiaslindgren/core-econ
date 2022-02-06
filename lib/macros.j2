@@ -34,3 +34,19 @@
     </script>
  {% endfor %}
 {% endmacro %}
+
+{% macro vega_embed() %}
+  <div id="vis"></div>
+  <script type="text/javascript">
+    function loadJSON(id) {
+      return JSON.parse(document.getElementById(id).innerHTML);
+    }
+    const spec = loadJSON("vega-data-spec");
+    const options = loadJSON("vega-data-options");
+    vegaEmbed("#vis", spec, options).then(() => {
+        const bindings = document.querySelector("#vis.vega-embed form.vega-bindings");
+        const canvas = document.querySelector("#vis.vega-embed canvas");
+        canvas.parentNode.insertBefore(bindings, canvas);
+    });
+  </script>
+{% endmacro %}

@@ -60,15 +60,20 @@ def altair_chart_to_html(chart, renderer="canvas", actions=False, **opt):
     opt = dict(renderer=renderer, actions=actions, **opt)
     opt = json.dumps(opt)
     html = f"""
-        <div id="vis"></div>
-        <script type="text/javascript">
-          var spec = {spec};
-          var opt = {opt};
-          vegaEmbed("#vis", spec, opt).then(() => {{
-              const bindings = document.querySelector("#vis.vega-embed form.vega-bindings");
-              const canvas = document.querySelector("#vis.vega-embed canvas");
-              canvas.parentNode.insertBefore(bindings, canvas);
-          }});
+        <script type="application/json" id="vega-data-spec">
+          {spec}
+        </script>
+        <script type="application/json" id="vega-data-options">
+          {opt}
         </script>
     """
     return textwrap.dedent(html)
+
+
+def configure_altair_fonts(chart, config):
+    return (
+        chart.configure_axis(**config)
+        .configure_legend(**config)
+        .configure_header(**config)
+        .configure_title(fontSize=config["titleFontSize"], font=config["titleFont"])
+    )

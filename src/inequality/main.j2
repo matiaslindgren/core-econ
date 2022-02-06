@@ -1,8 +1,8 @@
-{% from 'macros.j2' import head, vega_lib %}
+{% from 'macros.j2' import head, vega_lib, vega_embed %}
 {% extends 'base.html' %}
 
 {% block head %}
-    {{ head("this desc", "this title") }}
+    {{ head("Visualizing income inequality as rich-to-poor ratio by GDP", "Income inequality") }}
     {{ vega_lib() }}
 {% endblock %}
 
@@ -13,4 +13,5 @@
     {% for script in scripts %}
         {{ script }}
     {% endfor %}
+    {{ vega_embed() }}
 {% endblock %}
