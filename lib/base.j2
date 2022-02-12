@@ -1,0 +1,45 @@
+{% from 'macros.j2' import vega_lib, vega_embed %}
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block head %}
+    {% endblock %}
+    {% set deps = [
+      'vega@5',
+      'vega-lite@4',
+      'vega-embed@6',
+    ]
+    %}
+    {% for dep in deps %}
+      <script src="https://cdn.jsdelivr.net/npm/{{ dep }}" crossorigin="anonymous">
+      </script>
+    {% endfor %}
+    <style>
+body {
+  font-family: Georgia, serif;
+}
+    </style>
+  </head>
+  <body>
+    {% for element in elements %}
+      {{ element }}
+    {% endfor %}
+    <div id="vega-container"></div>
+    <script type="text/javascript">
+      function loadJSON(id) {
+        return JSON.parse(document.getElementById(id).innerHTML);
+      }
+      const spec = loadJSON("vega-data-spec");
+      const options = loadJSON("vega-data-options");
+      vegaEmbed("#vega-container", spec, options).then(() => {
+        const bindings = document.querySelector("#vega-container.vega-embed form.vega-bindings");
+        const canvas = document.querySelector("#vega-container.vega-embed canvas");
+        canvas.parentNode.insertBefore(bindings, canvas);
+      });
+    </script>
+    {% block body %}
+    {% endblock %}
+  </body>
+</html>

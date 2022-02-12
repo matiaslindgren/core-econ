@@ -79,7 +79,14 @@ def altair_chart_to_html(chart, renderer="canvas", actions=False, **opt):
     return textwrap.dedent(html)
 
 
-def configure_altair_fonts(chart, config):
+def configure_altair_fonts(chart, **config):
+    config = dict(
+        titleFontSize=16,
+        labelFontSize=14,
+        titleFont="Georgia",
+        labelFont="Georgia",
+        **config,
+    )
     title_config = {}
     if "titleFontSize" in config:
         title_config["fontSize"] = config["titleFontSize"]

@@ -26,12 +26,6 @@ def plot_income(data):
     income = income.merge(inequality, how="left", on=["Country", "Year"])
     income = income.drop(["index"], axis="columns")
 
-    font_config = dict(
-        titleFontSize=16,
-        labelFontSize=14,
-        titleFont="Georgia",
-        labelFont="Georgia",
-    )
     width, height = 2, 16
     width_ratio = 0.1
     scale = 150
@@ -119,7 +113,7 @@ def plot_income(data):
         .configure_view(strokeWidth=0)
         .configure_axis(grid=False)
     )
-    chart = common.configure_altair_fonts(chart, font_config)
+    chart = common.configure_altair_fonts(chart)
     return common.altair_chart_to_html(chart)
 
 

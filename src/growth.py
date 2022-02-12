@@ -1,7 +1,8 @@
 import sys
+import math
 
-import pandas as pd
 import altair as alt
+import pandas as pd
 
 alt.data_transformers.disable_max_rows()
 
@@ -15,40 +16,109 @@ def plot_growth(data):
             "Entity": "Country",
         }
     )
-    data.Year = data.Year.astype(int)
-    data = data[data.Year > 1800]
-
-    countries = [
-        "Afghanistan",
-        "Finland",
-        "Sweden",
-        "United States",
-        "Japan",
-        "Germany",
-    ]
+    del data["Code"]
+    data["Date"] = pd.to_datetime(data.pop("Year"), format="%Y", errors="coerce")
+    data = data[1700 <= data.Date.dt.year]
+    countries = """
+        Afghanistan
+        Argentina
+        Australia
+        Brazil
+        China
+        Congo
+        Denmark
+        Egypt
+        Finland
+        France
+        Germany
+        Greece
+        India
+        Indonesia
+        Italy
+        Japan
+        Kenya
+        Kuwait
+        Mexico
+        Mozambique
+        Netherlands
+        Niger
+        Norway
+        Russian Federation
+        South Africa
+        Spain
+        Sweden
+        Switzerland
+        Turkey
+        United Kingdom
+        United States
+    """
+    countries = sorted(filter(None, set(c.strip() for c in countries.splitlines())))
     data = data[data.Country.isin(countries)]
 
-    font_config = dict(
-        titleFontSize=16,
-        labelFontSize=14,
-        titleFont="Georgia",
-        labelFont="Georgia",
-    )
-    width, height = 10, 6
+    gdp_range = [64000 / (2 ** i) for i in range(10)][::-1]
+    gdp_title = "GDP (US$)"
+
+    width, height = 14, 8
     scale = 100
 
-    lines = (
-        alt.Chart(data)
-        .mark_line()
-        .encode(
-            alt.X("Year", type="ordinal"),
-            alt.Y("GDP", type="quantitative"),
-            alt.Color("Country", type="nominal"),
-        )
-        .properties(width=scale * width, height=scale * height)
+    country_selector = alt.selection_multi(
+        fields=["Country"],
+        bind="legend",
     )
-    chart = lines.configure_view(strokeWidth=0)
-    chart = common.configure_altair_fonts(chart, font_config)
+    nearest_line_selector = alt.selection(
+        fields=["Country"],
+        type="single",
+        on="mouseover",
+        nearest=True,
+    )
+    base = alt.Chart(data).encode(
+        alt.X(
+            "Date",
+            type="temporal",
+            timeUnit="year",
+            axis=alt.Axis(grid=True, labelAngle=0),
+        ),
+        alt.Y(
+            "GDP",
+            type="quantitative",
+            axis=alt.Axis(grid=True, title=gdp_title, values=gdp_range),
+            scale=alt.Scale(type="log", base=2),
+        ),
+        alt.Color(
+            "Country",
+            type="nominal",
+            scale=alt.Scale(scheme="category20"),
+            legend=alt.Legend(values=countries, symbolLimit=len(countries)),
+        ),
+        tooltip=[
+            "Country",
+            alt.Tooltip(field="Date", type="temporal", timeUnit="year"),
+            alt.Tooltip(field="GDP", title=gdp_title, format=","),
+        ],
+    )
+    lines = (
+        base.mark_point()
+        .encode(
+            opacity=alt.condition(
+                country_selector,
+                alt.value(1),
+                alt.value(0.1),
+            ),
+            size=alt.condition(
+                ~nearest_line_selector,
+                alt.value(2),
+                alt.value(6),
+            ),
+        )
+        .transform_filter(country_selector)
+        .add_selection(country_selector)
+        .add_selection(nearest_line_selector)
+    )
+    chart = lines.configure_view(strokeWidth=0).properties(
+        width=scale * width,
+        height=scale * height,
+    )
+    chart = common.configure_altair_fonts(chart)
     return common.altair_chart_to_html(chart)
 
 

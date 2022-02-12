@@ -5,7 +5,7 @@ LIB := lib
 SRC := src
 DST := out
 MODULES := index inequality growth
-LIB_DEPS := base.html macros.j2 common.py
+LIB_DEPS := base.j2 macros.j2 common.py
 
 OUT_FILES := $(addprefix $(DST)/,$(addsuffix .html,$(MODULES)))
 LIB_FILES := $(addprefix $(LIB)/,$(LIB_DEPS))
