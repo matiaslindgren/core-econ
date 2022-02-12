@@ -87,7 +87,6 @@ def plot_growth(data):
         alt.Color(
             "Country",
             type="nominal",
-            scale=alt.Scale(scheme="category20"),
             legend=alt.Legend(values=countries, symbolLimit=len(countries)),
         ),
         tooltip=[
@@ -99,11 +98,6 @@ def plot_growth(data):
     lines = (
         base.mark_point()
         .encode(
-            opacity=alt.condition(
-                country_selector,
-                alt.value(1),
-                alt.value(0.1),
-            ),
             size=alt.condition(
                 ~nearest_line_selector,
                 alt.value(2),
@@ -114,7 +108,7 @@ def plot_growth(data):
         .add_selection(country_selector)
         .add_selection(nearest_line_selector)
     )
-    chart = lines.configure_view(strokeWidth=0).properties(
+    chart = lines.properties(
         width=scale * width,
         height=scale * height,
     )
