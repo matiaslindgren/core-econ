@@ -1,4 +1,5 @@
 import sys
+import pathlib
 
 import pandas as pd
 import altair as alt
@@ -38,6 +39,8 @@ def plot_income(data):
     deciles_width = scale * (1 - width_ratio) * width
     inequality_width = scale * width_ratio * width
 
+    income_label = "GDP ($ PPP)"
+
     slider = alt.binding_range(min=income.Year.min(), max=income.Year.max(), step=1)
     select_year = alt.selection_single(
         name="Year", fields=["Year"], bind=slider, init={"Year": income.Year.min()}
@@ -49,7 +52,7 @@ def plot_income(data):
             alt.X(
                 "Decile",
                 type="ordinal",
-                axis=alt.Axis(orient="top", labelAngle=0),
+                axis=alt.Axis(title="Income decile", orient="top", labelAngle=0),
                 scale=alt.Scale(padding=0),
             ),
             alt.Y(
@@ -63,7 +66,7 @@ def plot_income(data):
                 "Income",
                 type="quantitative",
                 legend=alt.Legend(
-                    title="Income (USD)",
+                    title=income_label,
                     gradientLength=deciles_width,
                     orient="top",
                     direction="horizontal",
@@ -79,7 +82,7 @@ def plot_income(data):
                 "Country",
                 "Year",
                 "Decile",
-                alt.Tooltip(field="Income", title="Income (USD)", format=","),
+                alt.Tooltip(field="Income", title=income_label, format=","),
             ],
         )
         .properties(width=deciles_width, height=scale * height)
@@ -120,26 +123,18 @@ def plot_income(data):
     return common.altair_chart_to_html(chart)
 
 
-def main(name):
-    scripts = []
-    divs = []
-    divs.extend(
-        [
-            "<h1>Inequality as rich-to-poor ratio by GDP ($ PPP)</h1>",
-            f"<b>{common.now()}</b>",
-            "<br>",
-        ]
-    )
+def main():
+    elements = common.header_elements(__file__)
     data = common.read_data(
         fn="read_csv",
         url=DATA_URL,
         header=2,
     )
     html = plot_income(data)
-    divs.append(html)
-    print(common.render(name, scripts, divs))
+    elements.append(html)
+    print(common.render(__file__, elements=elements))
     return data
 
 
 if __name__ == "__main__":
-    data = main(sys.argv[1])
+    data = main()

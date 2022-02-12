@@ -1,0 +1,14 @@
+{% from 'macros.j2' import head %}
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ head("core-econ scribbles", "core-econ scribbles") }}
+{% endblock %}
+
+{% block body %}
+    <ol>
+    {% for module in modules %}
+        <li><a href="./{{ module }}.html">{{ module }}</a></li>
+    {% endfor %}
+    </ol>
+{% endblock %}

@@ -1,12 +1,30 @@
 SHELL := /bin/bash
 PYTHON := python3.9
-DST := ./out
-SRC := inequality growth
 
-.PHONY: $(SRC) index
+LIB := lib
+SRC := src
+DST := out
+MODULES := index inequality growth
+LIB_DEPS := base.html macros.j2 common.py
 
-all: index $(SRC)
+OUT_FILES := $(addprefix $(DST)/,$(addsuffix .html,$(MODULES)))
+LIB_FILES := $(addprefix $(LIB)/,$(LIB_DEPS))
 
-$(SRC):
+vpath %.py $(SRC)
+vpath %.j2 $(SRC)
+
+.PHONY: all clean dirs
+
+
+all: $(OUT_FILES)
+
+clean:
+	rm -rfv $(DST)
+
+dirs: $(DST)
+
+$(DST):
 	mkdir -pv $(DST)
-	PYTHONPATH=./lib $(PYTHON) ./src/$@/main.py $@ > $(DST)/$@.html
+
+$(OUT_FILES): $(DST)/%.html: $(SRC)/%.py $(SRC)/%.j2 $(LIB_FILES) | dirs
+	PYTHONPATH=./$(LIB) $(PYTHON) $< $(filter-out index,$(MODULES)) > $@

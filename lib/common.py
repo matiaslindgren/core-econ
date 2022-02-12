@@ -14,15 +14,28 @@ import requests
 memory = joblib.Memory(pathlib.Path(".").joinpath("cache"), verbose=0)
 
 
-def now():
+def module_name(file):
+    return pathlib.Path(file).stem
+
+
+def header_elements(file):
+    return [
+        "<a href='index.html'>go back</a>",
+        f"<h1>{module_name(file).capitalize()}</h1>",
+        f"<b>{today()}</b>",
+        "<br>",
+    ]
+
+
+def today():
     return datetime.datetime.now().strftime("%d. %B %Y")
 
 
-def render(name, scripts, divs):
+def render(module, elements=(), scripts=(), **context):
     rootdir = pathlib.Path(".").parent
     template_dirs = [
         rootdir.joinpath("lib"),
-        rootdir.joinpath("src", name),
+        rootdir.joinpath("src"),
     ]
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(template_dirs),
@@ -31,8 +44,8 @@ def render(name, scripts, divs):
         trim_blocks=True,
         lstrip_blocks=True,
     )
-    template = env.get_template("main.j2")
-    html = template.render(scripts=scripts, divs=divs)
+    template = env.get_template(f"{module_name(module)}.j2")
+    html = template.render(scripts=scripts, elements=elements, **context)
     tree = bs4.BeautifulSoup(html, features="html.parser")
     return tree.prettify()
 

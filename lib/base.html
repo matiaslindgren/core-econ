@@ -1,8 +1,10 @@
+{% from 'macros.j2' import vega_lib, vega_embed %}
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
     {% block head %}
     {% endblock %}
+    {{ vega_lib() }}
   <style>
     body {
       font-family: Georgia, serif;
@@ -10,6 +12,10 @@
   </style>
   </head>
   <body>
+    {% for element in elements %}
+      {{ element }}
+    {% endfor %}
+    {{ vega_embed() }}
     {% block body %}
     {% endblock %}
   </body>

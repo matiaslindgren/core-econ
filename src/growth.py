@@ -52,18 +52,17 @@ def plot_growth(data):
     return common.altair_chart_to_html(chart)
 
 
-def main(name):
-    scripts = []
-    divs = []
+def main():
+    elements = common.header_elements(__file__)
     data = common.read_data(
         fn="read_csv",
         filename="historys-hockey-stick-gross-domestic-product-per-capita-using-the-ratio-scale-1990.csv",
     )
     html = plot_growth(data)
-    divs.append(html)
-    print(common.render(name, scripts, divs))
+    elements.append(html)
+    print(common.render(__file__, elements=elements))
     return data
 
 
 if __name__ == "__main__":
-    data = main(sys.argv[1])
+    data = main()
