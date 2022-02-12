@@ -114,19 +114,17 @@ def plot_income(data):
         .configure_axis(grid=False)
     )
     chart = common.configure_altair_fonts(chart)
-    return common.altair_chart_to_html(chart)
+    return chart, data
 
 
 def main():
-    elements = common.header_elements(__file__)
     data = common.read_data(
         fn="read_csv",
         url=DATA_URL,
         header=2,
     )
-    html = plot_income(data)
-    elements.append(html)
-    print(common.render(__file__, elements=elements))
+    chart, data = plot_income(data)
+    print(common.render(__file__, chart=chart))
     return data
 
 

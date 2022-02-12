@@ -1,11 +1,11 @@
 {% from 'macros.j2' import vega_lib, vega_embed %}
 <!DOCTYPE HTML>
 <html lang="en">
+
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% block head %}
-    {% endblock %}
+
     {% set deps = [
       'vega@5',
       'vega-lite@4',
@@ -16,30 +16,52 @@
       <script src="https://cdn.jsdelivr.net/npm/{{ dep }}" crossorigin="anonymous">
       </script>
     {% endfor %}
+
+    {% block head %}
+    {% endblock %}
+
     <style>
-body {
-  font-family: Georgia, serif;
-}
+    {% include "style.css" %}
     </style>
+
   </head>
+
   <body>
-    {% for element in elements %}
-      {{ element }}
-    {% endfor %}
-    <div id="vega-container"></div>
-    <script type="text/javascript">
-      function loadJSON(id) {
-        return JSON.parse(document.getElementById(id).innerHTML);
-      }
-      const spec = loadJSON("vega-data-spec");
-      const options = loadJSON("vega-data-options");
-      vegaEmbed("#vega-container", spec, options).then(() => {
-        const bindings = document.querySelector("#vega-container.vega-embed form.vega-bindings");
-        const canvas = document.querySelector("#vega-container.vega-embed canvas");
-        canvas.parentNode.insertBefore(bindings, canvas);
-      });
-    </script>
+    {% if module_name != 'index' %}
+      <a href="index.html">go back</a>
+    {% endif %}
+    <h1>{{ module_name }}</h1>
+    <dl>
+      <dt>Created at</dt>
+      <dd>{{ created_at }}</dd>
+      {% if metadata.desc %}
+        <dt>Description</dt>
+        <dd>{{ metadata.desc }}</dd>
+      {% endif %}
+      {% if metadata.src %}
+        <dt>Data source</dt>
+        <dd>{{ metadata.src }}</dd>
+        <dt>Downloaded from</dt>
+        <dd><a href="{{ metadata.url }}">{{ metadata.url_name }}</a></dd>
+      {% endif %}
+    </dl>
+
     {% block body %}
     {% endblock %}
+
+    {% if has_chart %}
+      <div id="vega-container"></div>
+      <script type="text/javascript">
+        const spec = {{ vega_spec }};
+        const options = {{ vega_opt }};
+        vegaEmbed("#vega-container", spec, options).then(() => {
+          const bindings = document.querySelector("#vega-container.vega-embed form.vega-bindings");
+          const canvas = document.querySelector("#vega-container.vega-embed canvas");
+          canvas.parentNode.insertBefore(bindings, canvas);
+        });
+      </script>
+    {% endif %}
+
   </body>
+
 </html>

@@ -4,12 +4,7 @@ import common
 
 
 def main(modules):
-    elements = [
-        f"<h1>core-econ scribbles</h1>",
-        f"<b>{common.today()}</b>",
-        "<br>",
-    ]
-    print(common.render(__file__, elements=elements, modules=modules))
+    print(common.render(__file__, modules=modules))
 
 
 if __name__ == "__main__":

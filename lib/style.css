@@ -1,0 +1,18 @@
+body {
+	font-family: Georgia, serif;
+}
+
+dt {
+	font-weight: bold;
+}
+
+dl,
+dd
+{
+	font-size: .9rem;
+}
+
+dd {
+	margin-bottom: 1em;
+}
+
