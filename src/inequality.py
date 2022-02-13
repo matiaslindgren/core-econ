@@ -37,7 +37,10 @@ def plot_income(data):
 
     slider = alt.binding_range(min=income.Year.min(), max=income.Year.max(), step=1)
     select_year = alt.selection_single(
-        name="Year", fields=["Year"], bind=slider, init={"Year": income.Year.min()}
+        name="Year",
+        fields=["Year"],
+        bind=slider,
+        init={"Year": income.Year.min()},
     )
     deciles_heatmap = (
         alt.Chart(income)

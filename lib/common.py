@@ -4,6 +4,7 @@ import json
 import pathlib
 import sys
 
+import altair as alt
 import bs4
 import jinja2
 import joblib
@@ -105,4 +106,18 @@ def configure_altair_fonts(chart, **config):
         .configure_legend(**config)
         .configure_header(**config)
         .configure_title(**title_config)
+    )
+
+
+def altair_selector(*fields, **kwargs):
+    return alt.selection(
+        fields=fields,
+        **dict(
+            type="single",
+            on="mouseover",
+            clear="mouseout",
+            nearest=True,
+            empty="none",
+            **kwargs,
+        ),
     )

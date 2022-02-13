@@ -57,16 +57,8 @@ def plot_growth(data):
     width, height = 14, 8
     scale = 100
 
-    country_selector = alt.selection_multi(
-        fields=["Country"],
-        bind="legend",
-    )
-    nearest_point_selector = alt.selection(
-        fields=["Date", "Country"],
-        type="single",
-        on="mouseover",
-        nearest=True,
-    )
+    country_selector = alt.selection_multi(fields=["Country"], bind="legend")
+    nearest_point_selector = common.altair_selector("Date", "Country")
     base = alt.Chart(data).encode(
         alt.X(
             "Date",
