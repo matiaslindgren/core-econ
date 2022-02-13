@@ -1,5 +1,5 @@
 title: >
-  Visualizing income inequality
+  Income inequality
 desc: >
   Comparing income by GDP (US$ PPP) deciles from 1st (poor) to 10th (rich).
   Inequality is defined as the ratio of "rich-to-poor", ie. 10th Decile GDP / 1st Decile GDP.
@@ -7,3 +7,7 @@ src: >
   Jack Blundell, (2022) "Globalinc: Visualisation of the Global Income Distribution since 1980"
 url: https://jackblun.github.io/Globalinc/
 url_name: Globalinc
+chapter: >
+  1.1 Income inequality
+chapter_url: >
+  https://core-econ.org/the-economy/book/text/01.html#11-income-inequality

@@ -19,7 +19,17 @@ def module_name(file):
 
 
 def module_metadata(file):
-    meta = dict.fromkeys(["title", "desc", "src", "url", "url_name"])
+    meta = dict.fromkeys(
+        [
+            "title",
+            "desc",
+            "src",
+            "url",
+            "url_name",
+            "chapter",
+            "chapter_url",
+        ]
+    )
     path = pathlib.Path("metadata").joinpath(module_name(file)).with_suffix(".yaml")
     if path.exists():
         meta.update(yaml.safe_load(path.read_text()))

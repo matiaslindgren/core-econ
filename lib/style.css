@@ -1,9 +1,11 @@
 body {
 	font-family: Georgia, serif;
+	padding: 1em;
 }
 
-dt {
-	font-weight: bold;
+dl {
+	padding-top: 1em;
+	padding-bottom: 1em;
 }
 
 dl,
@@ -12,7 +14,10 @@ dd
 	font-size: .9rem;
 }
 
+dt {
+	font-weight: bold;
+}
+
 dd {
 	margin-bottom: 1em;
 }
-

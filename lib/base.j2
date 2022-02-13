@@ -42,8 +42,12 @@
       {% if metadata.src %}
         <dt>Data source</dt>
         <dd>{{ metadata.src }}</dd>
-        <dt>Downloaded from</dt>
+        <dt>Data downloaded from</dt>
         <dd><a href="{{ metadata.url }}">{{ metadata.url_name }}</a></dd>
+      {% endif %}
+      {% if metadata.chapter %}
+        <dt>Book chapter</dt>
+        <dd><a href="{{ metadata.chapter_url }}">{{ metadata.chapter }}</a></dd>
       {% endif %}
     </dl>
 
