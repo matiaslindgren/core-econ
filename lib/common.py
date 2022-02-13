@@ -19,7 +19,7 @@ def module_name(file):
 
 
 def module_metadata(file):
-    meta = dict.fromkeys(["desc", "src", "url", "url_name"])
+    meta = dict.fromkeys(["title", "desc", "src", "url", "url_name"])
     path = pathlib.Path("metadata").joinpath(module_name(file)).with_suffix(".yaml")
     if path.exists():
         meta.update(yaml.safe_load(path.read_text()))
@@ -43,7 +43,7 @@ def render(module, chart=None, **extra_context):
         trim_blocks=True,
         lstrip_blocks=True,
     )
-    template = env.get_template(f"{module_name(module)}.j2")
+    template = env.select_template([f"{module_name(module)}.j2", "base.j2"])
     context = dict(
         module_name=module_name(module),
         metadata=module_metadata(module),

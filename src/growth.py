@@ -18,7 +18,7 @@ def plot_growth(data):
     )
     del data["Code"]
     data["Date"] = pd.to_datetime(data.pop("Year"), format="%Y", errors="coerce")
-    data = data[1700 <= data.Date.dt.year]
+    data = data[1680 <= data.Date.dt.year]
     countries = """
         Afghanistan
         Argentina
@@ -26,8 +26,6 @@ def plot_growth(data):
         Brazil
         China
         Congo
-        Denmark
-        Egypt
         Finland
         France
         Germany
@@ -37,9 +35,7 @@ def plot_growth(data):
         Italy
         Japan
         Kenya
-        Kuwait
         Mexico
-        Mozambique
         Netherlands
         Niger
         Norway
@@ -65,8 +61,8 @@ def plot_growth(data):
         fields=["Country"],
         bind="legend",
     )
-    nearest_line_selector = alt.selection(
-        fields=["Country"],
+    nearest_point_selector = alt.selection(
+        fields=["Date", "Country"],
         type="single",
         on="mouseover",
         nearest=True,
@@ -95,20 +91,20 @@ def plot_growth(data):
             alt.Tooltip(field="GDP", title=gdp_title, format=","),
         ],
     )
-    lines = (
+    points = (
         base.mark_point()
         .encode(
             size=alt.condition(
-                ~nearest_line_selector,
-                alt.value(2),
-                alt.value(6),
+                ~nearest_point_selector,
+                alt.value(4),
+                alt.value(50),
             ),
         )
         .transform_filter(country_selector)
         .add_selection(country_selector)
-        .add_selection(nearest_line_selector)
+        .add_selection(nearest_point_selector)
     )
-    chart = lines.properties(
+    chart = points.properties(
         width=scale * width,
         height=scale * height,
     )

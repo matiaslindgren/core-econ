@@ -1,10 +1,11 @@
-{% from 'macros.j2' import vega_lib, vega_embed %}
 <!DOCTYPE HTML>
 <html lang="en">
 
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ metadata.desc }}">
+    <title>{{ metadata.title }}</title>
 
     {% set deps = [
       'vega@5',
@@ -17,12 +18,12 @@
       </script>
     {% endfor %}
 
-    {% block head %}
-    {% endblock %}
-
     <style>
     {% include "style.css" %}
     </style>
+
+    {% block head %}
+    {% endblock %}
 
   </head>
 
@@ -30,7 +31,7 @@
     {% if module_name != 'index' %}
       <a href="index.html">go back</a>
     {% endif %}
-    <h1>{{ module_name }}</h1>
+    <h1>{{ metadata.title }}</h1>
     <dl>
       <dt>Created at</dt>
       <dd>{{ created_at }}</dd>
@@ -46,9 +47,6 @@
       {% endif %}
     </dl>
 
-    {% block body %}
-    {% endblock %}
-
     {% if has_chart %}
       <div id="vega-container"></div>
       <script type="text/javascript">
@@ -61,6 +59,9 @@
         });
       </script>
     {% endif %}
+
+    {% block body %}
+    {% endblock %}
 
   </body>
 

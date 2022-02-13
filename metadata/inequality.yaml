@@ -1,3 +1,5 @@
+title: >
+  Visualizing income inequality
 desc: >
   Comparing income by GDP (US$ PPP) deciles from 1st (poor) to 10th (rich).
   Inequality is defined as the ratio of "rich-to-poor", ie. 10th Decile GDP / 1st Decile GDP.
