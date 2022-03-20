@@ -7,7 +7,7 @@ META := metadata
 DST  := out
 
 INDEX    := index
-MODULES  := inequality growth global_warming
+MODULES  := inequality growth global_warming comparative_advantage
 LIB_DEPS := base.j2 common.py style.css
 
 LIB_FILES  := $(addprefix $(LIB)/,$(LIB_DEPS))
@@ -35,5 +35,5 @@ $(DST):
 $(DST)/$(INDEX).html: $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(LIB_FILES) $(SRC_FILES) $(META_FILES) %.j2 | dirs
 	PYTHONPATH=./$(LIB) $(PYTHON) $< $(MODULES) > $@
 
-$(DST_FILES): $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(LIB_FILES) | dirs
+$(DST_FILES): $(DST)/%.html: $(SRC)/%.py $(SRC)/%.js $(SRC)/%.j2 $(META)/%.yaml $(LIB_FILES) | dirs
 	PYTHONPATH=./$(LIB) $(PYTHON) $< > $@

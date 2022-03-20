@@ -1,0 +1,41 @@
+{% extends 'base.j2' %}
+
+{% block head %}
+<style>
+#table-max-production {
+    max-width: 400px;
+}
+.grid {
+    display: grid;
+    grid-template-columns: 4em 7em 5em 1fr 1fr 1fr;
+}
+.grid-element * {
+    display: flex;
+    align-items: center;
+}
+</style>
+<script>
+{% include 'comparative_advantage.js' %}
+</script>
+{% endblock %}
+
+{% block body %}
+    <table id='table-max-production'>
+        <thead>
+            <tr>
+                <th></th>
+                <th colspan="4">Maximum output at 100% effort</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <br>
+    Greta has an absolute advantage in production of apples and corn, but Carlos has a comparative advantage in producing apples.
+    <br>
+    <div class="grid" id='grid-input'>
+    </div>
+
+{% endblock %}

@@ -22,3 +22,17 @@ dt {
 dd {
 	margin-bottom: 1em;
 }
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+	max-width: 800px;
+}
+
+table td {
+	vertical-align: baseline;
+}
+
+table tr {
+	border-bottom: 1px solid lightgray;
+}

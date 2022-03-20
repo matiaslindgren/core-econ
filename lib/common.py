@@ -54,7 +54,7 @@ def render(module, chart=None, **extra_context):
         trim_blocks=True,
         lstrip_blocks=True,
     )
-    template = env.select_template([f"{module_name(module)}.j2", "base.j2"])
+    template = env.select_template([f"{module_name(module)}.j2"])
     context = dict(
         module_name=module_name(module),
         metadata=module_metadata(module),

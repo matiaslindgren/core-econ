@@ -1,6 +1,6 @@
 # core-econ
 
-* Unofficial visualizations for The Core Team's [The Economy](https://core-econ.org/the-economy/).
+* Visualizing [The Economy](https://core-econ.org/the-economy/).
 * Written mostly in Python, using [pandas](https://pandas.pydata.org/docs/) for data transformations and [Altair](https://altair-viz.github.io/) for visualizations.
 * Fully static: HTML, JavaScript, CSS only.
 
@@ -9,7 +9,7 @@
 1. Install [`make`](https://www.gnu.org/software/make/)
 2. Install Python dependencies
     ```bash
-    python3.9 -m pip install --user -r requirements.txt
+    python3 -m pip install --user -r requirements.txt
     ```
 3. Build content into `./out`
     ```bash
