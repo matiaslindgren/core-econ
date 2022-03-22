@@ -1,161 +1,248 @@
 const data = {
-	greta: {
-		apples: {
-			max: 1250,
-			consume: 500,
-		},
-		corn: {
-			max: 50,
-			consume: 30,
-		},
-	},
-	carlos: {
-		apples: {
-			max: 1000,
-			consume: 300,
-		},
-		corn: {
-			max: 20,
-			consume: 14,
-		},
-	},
+  greta: {
+    apples: {
+      max: 1200,
+      consume: 600,
+    },
+    wheat: {
+      max: 60,
+      consume: 30,
+    },
+  },
+  carlos: {
+    apples: {
+      max: 1000,
+      consume: 300,
+    },
+    wheat: {
+      max: 20,
+      consume: 10,
+    },
+  },
 };
 
-const emoji = {
-	apples: '&#x1F34E;',
-	corn: '&#x1F33D;',
-};
+const applesPerWheat = (d) => d.apples.max / d.wheat.max;
 
 function getMaxProd(who) {
-	const d = data[who.toLowerCase()];
-	return tableRow([who, d.apples.max, d.corn.max, (d.apples.max / d.corn.max).toFixed(0)]);
-};
+  const d = data[who.toLowerCase()];
+  return tableRow([
+    who,
+    d.apples.max,
+    d.wheat.max,
+    (d.apples.max / d.wheat.max).toFixed(0),
+  ]);
+}
 
 function tableRow(row) {
-	const tr = document.createElement("tr");
-	for (let x of row) {
-		const td = document.createElement("td");
-		td.innerHTML = x;
-		tr.appendChild(td);
-	}
-	return tr;
+  const tr = document.createElement("tr");
+  for (let x of row) {
+    const td = document.createElement("td");
+    td.innerHTML = x;
+    tr.appendChild(td);
+  }
+  return tr;
 }
 
 function addGridRow(e, row) {
-	for (let x of row) {
-		const div = document.createElement("div");
-		div.classList.add("grid-element");
-		if (typeof x !== "object") {
-			const span = document.createElement("span");
-			span.innerHTML = x;
-			x = span;
-		}
-		div.appendChild(x);
-		e.appendChild(div);
-	}
+  for (let x of row) {
+    const div = document.createElement("div");
+    div.classList.add("grid-element");
+    if (typeof x !== "object") {
+      const span = document.createElement("span");
+      span.innerHTML = x;
+      x = span;
+    }
+    div.appendChild(x);
+    e.appendChild(div);
+  }
 }
 
-function getInt(id) {
-	return parseInt(document.getElementById(id).value);
+function getInput(id) {
+  const input = document.getElementById(id);
+  return {
+    id: id,
+    value: parseFloat(input.value),
+    min: parseFloat(input.min),
+    max: parseFloat(input.max),
+    step: parseFloat(input.step),
+  };
 }
 
-function updateAll() {
-	const ga_out = getInt("greta-apples-produce");
-	const ga_in = getInt("greta-apples-import");
-	update("greta-apples-surplus", ga_out + ga_in - data.greta.apples.consume);
+function updateAll({ skipId }) {
+  console.log(skipId);
+  const update = (id, values) => {
+    if (id === skipId) {
+      return;
+    }
+    const input = document.getElementById(id);
+    if (input.tagName === "INPUT") {
+      for (const key in values) {
+        if (typeof key !== "undefined") {
+          input[key] = values[key];
+        }
+      }
+      input.nextSibling.innerHTML = input.value;
+    } else {
+      input.innerHTML = values.value;
+    }
+  };
+  const constrain = (a, b) => {
+    if (a.id === skipId) {
+      return a;
+    }
+    return Object.assign(a, {
+      value: Math.round(a.max * (1 - b.value / b.max)),
+    });
+  };
+  const max = (a, b) => {
+    if (a.id === skipId) {
+      return a;
+    }
+    return Object.assign(a, {
+      value: Math.round(Math.min(a.value, b.value)),
+      max: Math.round(b.value),
+    });
+  };
 
-	const gc_out = getInt("greta-corn-produce");
-	const gc_in = getInt("greta-corn-import");
-	update("greta-corn-surplus", gc_out + gc_in - data.greta.corn.consume);
+  let g_ap = getInput("greta-apples-produce");
+  let g_wp = getInput("greta-wheat-produce");
+  g_ap = constrain(g_ap, g_wp);
+  g_wp = constrain(g_wp, g_ap);
 
-	const ca_out = getInt("carlos-apples-produce");
-	const ca_in = getInt("carlos-apples-import");
-	update("carlos-apples-surplus", ca_out + ca_in - data.carlos.apples.consume);
+  let g_ae = getInput("greta-apples-export");
+  let g_we = getInput("greta-wheat-export");
+  g_ae = max(g_ae, g_ap);
+  g_we = max(g_we, g_wp);
 
-	const cc_out = getInt("carlos-corn-produce");
-	const cc_in = getInt("carlos-corn-import");
-	update("carlos-corn-surplus", cc_out + cc_in - data.carlos.corn.consume);
+  let g_ac = data.greta.apples.consume;
+  let g_wc = data.greta.wheat.consume;
+
+  update("greta-apples-produce", g_ap);
+  update("greta-wheat-produce", g_wp);
+  update("greta-apples-export", g_ae);
+  update("greta-wheat-export", g_we);
+  update("greta-apples-total", { value: g_ap.value - g_ae.value - g_ac });
+  update("greta-wheat-total", { value: g_wp.value - g_we.value - g_wc });
 }
 
-function range(id, min, max, init) {
-	const container = document.createElement("span");
-	const input = document.createElement("input");
-	input.type = "range";
-	input.id = id;
-	input.min = min;
-	input.max = max;
-	input.value = init;
-	const value = document.createElement("span");
-	value.innerHTML = init;
-	input.oninput = (e) => {
-		value.innerHTML = e.target.value;
-		updateAll();
-	};
-	container.appendChild(input);
-	container.appendChild(value);
-	return container;
+function range({ id, min, max, step, init }) {
+  const container = document.createElement("span");
+  const input = document.createElement("input");
+  const value = document.createElement("span");
+  input.type = "range";
+  input.id = id;
+  input.step = step;
+  input.min = min;
+  input.max = max;
+  input.value = init;
+  value.innerHTML = init;
+  input.oninput = (e) => {
+    value.innerHTML = e.target.value;
+    updateAll({ skipId: id });
+  };
+  container.appendChild(input);
+  container.appendChild(value);
+  return container;
 }
 
 function spanWithId(id) {
-	const span = document.createElement("span");
-	span.id = id;
-	return span;
-}
-
-function update(id, value) {
-	const e = document.getElementById(id);
-	e.innerHTML = value;
+  const span = document.createElement("span");
+  span.id = id;
+  return span;
 }
 
 function main() {
-	let e = document.querySelector("#table-max-production tbody");
-	e.innerHTML = '';
-	e.appendChild(tableRow([
-		'',
-		'Apples (' + emoji.apples + ')',
-		'Corn (' + emoji.corn + ')',
-		emoji.apples + ' / ' + emoji.corn
-	]));
-	e.appendChild(getMaxProd('Greta'));
-	e.appendChild(getMaxProd('Carlos'));
+  let e = document.querySelector("#table-max-production tbody");
+  e.innerHTML = "";
+  e.appendChild(tableRow(["", "Apples", "Wheat (tons)", "Apples / Wheat"]));
+  e.appendChild(getMaxProd("Greta"));
+  e.appendChild(getMaxProd("Carlos"));
 
-	e = document.querySelector("#grid-input");
-	e.innerHTML = '';
-	addGridRow(e, ['', '', 'Consume', 'Produce', 'Import', 'Surplus']);
-	addGridRow(e, [
-		'Greta',
-		emoji.apples,
-		data.greta.apples.consume,
-		range('greta-apples-produce', 0, data.greta.apples.max, 0),
-		range('greta-apples-import', 0, data.carlos.apples.max, 600),
-		spanWithId('greta-apples-surplus'),
-	]);
-	addGridRow(e, [
-		'',
-		emoji.corn,
-		data.greta.corn.consume,
-		range('greta-corn-produce', 0, data.greta.corn.max, 50),
-		range('greta-corn-import', 0, data.carlos.corn.max, 0),
-		spanWithId('greta-corn-surplus'),
-	]);
-	addGridRow(e, [
-		'Carlos',
-		emoji.apples,
-		data.carlos.apples.consume,
-		range('carlos-apples-produce', 0, data.carlos.apples.max, 1000),
-		range('carlos-apples-import', 0, data.greta.apples.max, 0),
-		spanWithId('carlos-apples-surplus'),
-	]);
-	addGridRow(e, [
-		'',
-		emoji.corn,
-		data.carlos.corn.consume,
-		range('carlos-corn-produce', 0, data.carlos.corn.max, 0),
-		range('carlos-corn-import', 0, data.greta.corn.max, 15),
-		spanWithId('carlos-corn-surplus'),
-	]);
+  e = document.querySelector("#grid-input");
+  e.innerHTML = "";
+  addGridRow(e, ["", "", "Consume", "Produce", "Export", "Total"]);
+  addGridRow(e, [
+    "Greta",
+    "Apples",
+    data.greta.apples.consume,
+    range({
+      id: "greta-apples-produce",
+      min: 0,
+      max: data.greta.apples.max,
+      step: applesPerWheat(data.greta),
+      init: 0,
+    }),
+    range({
+      id: "greta-apples-export",
+      min: 0,
+      max: 0,
+      step: applesPerWheat(data.greta),
+      init: 0,
+    }),
+    spanWithId("greta-apples-total"),
+  ]);
+  addGridRow(e, [
+    "",
+    "Wheat",
+    data.greta.wheat.consume,
+    range({
+      id: "greta-wheat-produce",
+      min: 0,
+      max: data.greta.wheat.max,
+      step: 1,
+      init: data.greta.wheat.max,
+    }),
+    range({
+      id: "greta-wheat-export",
+      min: 0,
+      max: 0,
+      step: 1,
+      init: 0,
+    }),
+    spanWithId("greta-wheat-total"),
+  ]);
+  addGridRow(e, [
+    "Carlos",
+    "Apples",
+    data.carlos.apples.consume,
+    range({
+      id: "carlos-apples-produce",
+      min: 0,
+      max: data.carlos.apples.max,
+      step: applesPerWheat(data.carlos),
+      init: data.carlos.apples.max,
+    }),
+    range({
+      id: "carlos-apples-export",
+      min: 0,
+      max: data.carlos.apples.max,
+      step: applesPerWheat(data.carlos),
+      init: 0,
+    }),
+    spanWithId("carlos-apples-total"),
+  ]);
+  addGridRow(e, [
+    "",
+    "Wheat",
+    data.carlos.wheat.consume,
+    range({
+      id: "carlos-wheat-produce",
+      min: 0,
+      max: data.carlos.wheat.max,
+      step: 1,
+      init: 0,
+    }),
+    range({
+      id: "carlos-wheat-export",
+      min: 0,
+      max: data.carlos.wheat.max,
+      step: 1,
+      init: 0,
+    }),
+    spanWithId("carlos-wheat-total"),
+  ]);
 
-	updateAll();
+  updateAll({ skipId: null });
 }
 
 window.addEventListener("DOMContentLoaded", main);
