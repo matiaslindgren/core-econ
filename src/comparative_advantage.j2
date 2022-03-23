@@ -3,15 +3,21 @@
 {% block head %}
 <style>
 #table-max-production {
-    max-width: 400px;
+    max-width: 25em;
 }
 .grid {
     display: grid;
-    grid-template-columns: 4em 5em 5em 1fr 1fr 1fr;
+    grid-template-columns: 3em 1.5em 4em 13em 13em 5em 5em;
 }
 .grid-element * {
     display: flex;
     align-items: center;
+}
+span.total.negative {
+    background-color: rgba(255, 96, 0, 0.3);
+}
+span.total.positive {
+    background-color: rgba(104, 255, 0, 0.3);
 }
 </style>
 <script>
@@ -32,9 +38,9 @@
         <tbody>
         </tbody>
     </table>
-    <br>
-    Greta has an absolute advantage in production of apples and corn, but Carlos has a comparative advantage in producing apples.
-    <br>
+    <p>
+    Greta has an absolute advantage in production of apples and wheat, but Carlos has a comparative advantage in producing apples.
+    </p>
     <div class="grid" id='grid-input'>
     </div>
 
