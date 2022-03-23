@@ -84,7 +84,7 @@ function updateState({ skipId }) {
       input.nextSibling.innerHTML = input.value;
     } else {
       input.innerHTML = format(values.value);
-      if (input.classList.contains("total")) {
+      if (input.classList.contains("balance")) {
         input.classList.remove("negative");
         input.classList.remove("positive");
         if (values.value > 0) {
@@ -137,17 +137,17 @@ function updateState({ skipId }) {
   c_ae = exchange(c_ap, c_ae, g_wp, g_we, applesPerWheat);
   c_we = exchange(c_wp, c_we, g_ap, g_ae, 1 / applesPerWheat);
 
-  // Compute totals
-  const g_at = {
+  // Compute balance
+  const g_ab = {
     value: g_ap.value + c_ae.value - g_ae.value - data.greta.apples.consume,
   };
-  const g_wt = {
+  const g_wb = {
     value: g_wp.value + c_we.value - g_we.value - data.greta.wheat.consume,
   };
-  const c_at = {
+  const c_ab = {
     value: c_ap.value + g_ae.value - c_ae.value - data.carlos.apples.consume,
   };
-  const c_wt = {
+  const c_wb = {
     value: c_wp.value + g_we.value - c_we.value - data.carlos.wheat.consume,
   };
 
@@ -156,16 +156,16 @@ function updateState({ skipId }) {
   update("greta-wheat-produce", g_wp);
   update("greta-apples-exchange", g_ae);
   update("greta-wheat-exchange", g_we);
-  update("greta-apples-total", g_at);
-  update("greta-wheat-total", g_wt);
+  update("greta-apples-balance", g_ab);
+  update("greta-wheat-balance", g_wb);
   update("carlos-apples-produce", c_ap);
   update("carlos-wheat-produce", c_wp);
   update("carlos-apples-exchange", c_ae);
   update("carlos-wheat-exchange", c_we);
-  update("carlos-apples-total", c_at);
-  update("carlos-wheat-total", c_wt);
-  updateFace({ id: "greta-state", isDead: g_at.value < 0 || g_wt.value < 0 });
-  updateFace({ id: "carlos-state", isDead: c_at.value < 0 || c_wt.value < 0 });
+  update("carlos-apples-balance", c_ab);
+  update("carlos-wheat-balance", c_wb);
+  updateFace({ id: "greta-state", isDead: g_ab.value < 0 || g_wb.value < 0 });
+  updateFace({ id: "carlos-state", isDead: c_ab.value < 0 || c_wb.value < 0 });
 }
 
 function rangeInput({ id, min, max, step, init }) {
@@ -211,7 +211,7 @@ function main() {
   );
   e = document.querySelector("#grid-input");
   e.innerHTML = "";
-  addGridRow(e, ["", "", "", "Produce", "Exchange", "Consume", "Total"]);
+  addGridRow(e, ["", "", "", "Produce", "Exchange", "Consume", "Balance"]);
   addGridRow(e, [
     "Greta",
     spanWithId("greta-state"),
@@ -231,7 +231,7 @@ function main() {
       init: 0,
     }),
     -data.greta.apples.consume,
-    spanWithId("greta-apples-total", "total"),
+    spanWithId("greta-apples-balance", "balance"),
   ]);
   addGridRow(e, [
     "",
@@ -252,7 +252,7 @@ function main() {
       init: 15,
     }),
     -data.greta.wheat.consume,
-    spanWithId("greta-wheat-total", "total"),
+    spanWithId("greta-wheat-balance", "balance"),
   ]);
   addGridRow(e, [
     "Carlos",
@@ -273,7 +273,7 @@ function main() {
       init: 600,
     }),
     -data.carlos.apples.consume,
-    spanWithId("carlos-apples-total", "total"),
+    spanWithId("carlos-apples-balance", "balance"),
   ]);
   addGridRow(e, [
     "",
@@ -294,7 +294,7 @@ function main() {
       init: 0,
     }),
     -data.carlos.wheat.consume,
-    spanWithId("carlos-wheat-total", "total"),
+    spanWithId("carlos-wheat-balance", "balance"),
   ]);
 
   updateState({ skipId: null });
