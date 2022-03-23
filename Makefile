@@ -19,32 +19,36 @@ DST_FILES_WITH_JS := $(addprefix $(DST)/,$(addsuffix .html,$(MODULES_WITH_JS)))
 MODULES   := $(filter-out $(MODULES_WITH_JS),$(MODULES))
 DST_FILES := $(addprefix $(DST)/,$(addsuffix .html,$(MODULES)))
 
-ALL_MODULES   := $(MODULES) $(MODULES_WITH_JS)
-ALL_DST_FILES := $(DST_FILES) $(DST_FILES_WITH_JS)
 
 vpath %.py   $(SRC)
 vpath %.j2   $(SRC)
 vpath %.js   $(SRC)
 vpath %.yaml $(META)
 
-.PHONY: all clean dirs
+.PHONY: all clean dirs install run
 
 
-all: $(DST)/$(INDEX).html $(ALL_DST_FILES)
+all: $(DST)/$(INDEX).html $(DST_FILES) $(DST_FILES_WITH_JS)
 
 clean:
 	rm -rfv $(DST)
 
 dirs: $(DST)
 
+install:
+	$(PYTHON) -m pip install --user -r requirements.txt
+
 $(DST):
 	mkdir -pv $(DST)
 
 $(DST)/$(INDEX).html: $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(LIB_FILES) $(SRC_FILES) $(META_FILES) %.j2 | dirs
-	PYTHONPATH=./$(LIB) $(PYTHON) $< $(ALL_MODULES) > $@
+	PYTHONPATH=./$(LIB) $(PYTHON) $< $(MODULES) $(MODULES_WITH_JS) > $@
 
 $(DST_FILES): $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(LIB_FILES) | dirs
 	PYTHONPATH=./$(LIB) $(PYTHON) $< > $@
 
 $(DST_FILES_WITH_JS): $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(SRC)/%.j2 $(SRC)/%.js $(LIB_FILES) | dirs
 	PYTHONPATH=./$(LIB) $(PYTHON) $< > $@
+
+run: install $(DST_FILES) $(DST_FILES_WITH_JS)
+	$(PYTHON) -m http.server --directory $(DST)
