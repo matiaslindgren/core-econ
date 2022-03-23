@@ -256,6 +256,10 @@ function main() {
     -data.greta.wheat.consume,
     spanWithId("greta-wheat-balance", "balance"),
   ]);
+  addGridRow(
+    e,
+    Array.from(new Array(7), () => "")
+  );
   addGridRow(e, [
     "Carlos",
     spanWithId("carlos-state"),
