@@ -21,7 +21,9 @@ const data = {
   },
 };
 
-const applesPerWheat = 40;
+function applesPerWheat() {
+  return parseInt(document.getElementById("wheat-to-apples-xrate").value);
+}
 
 function getMaxProd(who) {
   const d = data[who.toLowerCase()];
@@ -130,12 +132,12 @@ function updateState({ skipId }) {
   // Apply constraints to state
   g_ap = balanceProduction(g_ap, g_wp);
   g_wp = balanceProduction(g_wp, g_ap);
-  g_ae = exchange(g_ap, g_ae, c_wp, c_we, applesPerWheat);
-  g_we = exchange(g_wp, g_we, c_ap, c_ae, 1 / applesPerWheat);
+  g_ae = exchange(g_ap, g_ae, c_wp, c_we, applesPerWheat());
+  g_we = exchange(g_wp, g_we, c_ap, c_ae, 1 / applesPerWheat());
   c_ap = balanceProduction(c_ap, c_wp);
   c_wp = balanceProduction(c_wp, c_ap);
-  c_ae = exchange(c_ap, c_ae, g_wp, g_we, applesPerWheat);
-  c_we = exchange(c_wp, c_we, g_ap, g_ae, 1 / applesPerWheat);
+  c_ae = exchange(c_ap, c_ae, g_wp, g_we, applesPerWheat());
+  c_we = exchange(c_wp, c_we, g_ap, g_ae, 1 / applesPerWheat());
 
   // Compute balance
   const g_ab = {
@@ -296,6 +298,10 @@ function main() {
     -data.carlos.wheat.consume,
     spanWithId("carlos-wheat-balance", "balance"),
   ]);
+
+  document.getElementById("wheat-to-apples-xrate").oninput = (e) => {
+    updateState({ skipId: null });
+  };
 
   updateState({ skipId: null });
 }
