@@ -50,5 +50,5 @@ $(DST_FILES): $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(LIB_FILES) | dirs
 $(DST_FILES_WITH_JS): $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(SRC)/%.j2 $(SRC)/%.js $(LIB_FILES) | dirs
 	PYTHONPATH=./$(LIB) $(PYTHON) $< > $@
 
-run: install $(DST_FILES) $(DST_FILES_WITH_JS)
+run: $(DST_FILES) $(DST_FILES_WITH_JS) | install
 	$(PYTHON) -m http.server --directory $(DST)

@@ -14,7 +14,7 @@
 ### Short version
 
 ```bash
-make run
+make -j run
 ```
 
 ### Long version
