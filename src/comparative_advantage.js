@@ -30,6 +30,7 @@ function getMaxProd(who) {
   return tableRow([
     who,
     d.apples.max,
+    "or",
     d.wheat.max,
     (d.apples.max / d.wheat.max).toFixed(0),
   ]);
@@ -89,9 +90,9 @@ function updateState({ skipId }) {
       if (input.classList.contains("balance")) {
         input.classList.remove("negative");
         input.classList.remove("positive");
-        if (values.value > 0) {
+        if (values.value >= 0.05) {
           input.classList.add("positive");
-        } else if (values.value < 0) {
+        } else if (values.value <= -0.05) {
           input.classList.add("negative");
         }
       }
@@ -202,7 +203,7 @@ function spanWithId(id, className) {
 function main() {
   let e = document.querySelector("#table-max-production tbody");
   e.innerHTML = "";
-  e.appendChild(tableRow(["", "Apples", "Wheat (tons)", "Apples / Wheat"]));
+  e.appendChild(tableRow(["", "Apples", "", "Wheat (tons)", "Apples / Wheat"]));
   e.appendChild(getMaxProd("Greta"));
   e.appendChild(getMaxProd("Carlos"));
 
