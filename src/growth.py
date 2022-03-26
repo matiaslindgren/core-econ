@@ -20,16 +20,13 @@ def plot_growth(data):
     data["Date"] = pd.to_datetime(data.pop("Year"), format="%Y", errors="coerce")
     data = data[1680 <= data.Date.dt.year]
     countries = """
-        Afghanistan
         Argentina
         Australia
         Brazil
         China
-        Congo
         Finland
         France
         Germany
-        Greece
         India
         Indonesia
         Italy
@@ -52,7 +49,7 @@ def plot_growth(data):
     data = data[data.Country.isin(countries)]
 
     gdp_range = [64000 / (2 ** i) for i in range(10)][::-1]
-    gdp_title = "GDP (US$)"
+    gdp_title = "GDP (2011 US$)"
 
     width, height = 14, 8
     scale = 100

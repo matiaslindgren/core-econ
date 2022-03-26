@@ -27,13 +27,7 @@ function applesPerWheat() {
 
 function getMaxProd(who) {
   const d = data[who.toLowerCase()];
-  return tableRow([
-    who,
-    d.apples.max,
-    "or",
-    d.wheat.max,
-    (d.apples.max / d.wheat.max).toFixed(0),
-  ]);
+  return tableRow([who, d.apples.max, "or", d.wheat.max, (d.apples.max / d.wheat.max).toFixed(0)]);
 }
 
 function tableRow(row) {
@@ -50,6 +44,9 @@ function addGridRow(e, row) {
   for (let x of row) {
     const div = document.createElement("div");
     div.classList.add("grid-element");
+    if (typeof x === "number") {
+      div.classList.add("number");
+    }
     if (typeof x !== "object") {
       const span = document.createElement("span");
       span.innerHTML = x;

@@ -7,13 +7,21 @@
 }
 .grid {
     display: grid;
-    grid-template-columns: 3em 1.5em 4em 13em 13em 5em 5em;
+    grid-template-columns: 3em 1.5em 4em 10em 10em 5em 5em;
     margin-top: 1em;
 }
 .grid-element * {
     display: flex;
-    align-items: center;
     min-height: 0.5em;
+}
+.grid-element span input {
+    max-width: 70%;
+}
+.grid-element.number,
+.grid-element span.balance {
+    justify-content: right;
+    display: grid;
+    margin-right: 0.5em;
 }
 span.balance.negative {
     background-color: rgba(255, 96, 0, 0.3);
