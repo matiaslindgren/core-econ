@@ -54,14 +54,12 @@
     {% if has_chart %}
       <div id="vega-container"></div>
       <script type="text/javascript">
+        {% include 'chart.js' %}
         const spec = {{ vega_spec }};
         const options = {{ vega_opt }};
-        vegaEmbed("#vega-container", spec, options).then(() => {
-          const bindings = document.querySelector("#vega-container.vega-embed form.vega-bindings");
-          const canvas = document.querySelector("#vega-container.vega-embed canvas");
-          canvas.parentNode.insertBefore(bindings, canvas);
-        });
+        buildChart(spec, options, {{ 'true' if custom_tooltip else 'false' }});
       </script>
+      <div id='custom-tooltip-element'></div>
     {% endif %}
 
     {% block body %}

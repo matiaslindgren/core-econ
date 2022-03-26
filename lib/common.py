@@ -1,4 +1,5 @@
 import datetime
+import functools
 import io
 import json
 import pathlib
@@ -55,14 +56,17 @@ def render(module, chart=None, **extra_context):
         lstrip_blocks=True,
     )
     template = env.select_template([f"{module_name(module)}.j2", "base.j2"])
-    context = dict(
-        module_name=module_name(module),
-        metadata=module_metadata(module),
-        created_at=today(),
-    )
+    context = {
+        "module_name": module_name(module),
+        "metadata": module_metadata(module),
+        "created_at": today(),
+        "has_chart": False,
+        "custom_tooltip": False,
+    }
     if chart:
         context["vega_spec"], context["vega_opt"] = altair_chart_to_json(chart)
-    html = template.render(has_chart=bool(chart), **dict(context, **extra_context))
+        context["has_chart"] = True
+    html = template.render(**(context | extra_context))
     tree = bs4.BeautifulSoup(html, features="html.parser")
     return tree.prettify()
 
@@ -77,8 +81,7 @@ def read_data(fn, url=None, filename=None, **kwargs):
         return getattr(pd, fn)(csv_path, **kwargs)
 
 
-def eprint(*a, file=sys.stderr, **kw):
-    print(*a, file=file, **kw)
+eprint = functools.partial(print, file=sys.stderr)
 
 
 def altair_chart_to_json(chart, renderer="canvas", actions=False, **opt):
@@ -89,13 +92,13 @@ def altair_chart_to_json(chart, renderer="canvas", actions=False, **opt):
 
 
 def configure_altair_fonts(chart, **config):
-    config = dict(
+    default_config = dict(
         titleFontSize=16,
         labelFontSize=14,
         titleFont="Georgia",
         labelFont="Georgia",
-        **config,
     )
+    config = default_config | config
     title_config = {}
     if "titleFontSize" in config:
         title_config["fontSize"] = config["titleFontSize"]

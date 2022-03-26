@@ -8,7 +8,7 @@ DST  := out
 
 INDEX    := index
 MODULES  := inequality growth global_warming comparative_advantage the_two_germanies
-LIB_DEPS := base.j2 common.py style.css
+LIB_DEPS := base.j2 common.py style.css chart.js
 
 LIB_FILES  := $(addprefix $(LIB)/,$(LIB_DEPS))
 SRC_FILES  := $(addprefix $(SRC)/,$(addsuffix .py,$(MODULES)))

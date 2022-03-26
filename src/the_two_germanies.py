@@ -22,12 +22,10 @@ def plot(data):
     countries = sorted(data.Country.unique())
     gdp_range = [64000 / (2 ** i) for i in range(10)][::-1]
     gdp_title = "GDP (1990 US$)"
-
-    width = height = 8
-    scale = 100
+    chart_size = 800
 
     nearest_point_selector = common.altair_selector("Date")
-    line_x = alt.X(
+    encoding_year = alt.X(
         "Date",
         title="Year",
         type="temporal",
@@ -39,34 +37,33 @@ def plot(data):
             formatType="time",
         ),
     )
-    line_y = alt.Y(
+    encoding_gdp = alt.Y(
         "GDP",
         type="quantitative",
         axis=alt.Axis(grid=True, title=gdp_title, values=gdp_range),
         scale=alt.Scale(type="log", base=2),
     )
-    line_color = alt.Color(
-        "Country",
-        type="nominal",
-        legend=alt.Legend(values=countries, symbolLimit=len(countries)),
-    )
     line = (
         alt.Chart(data)
         .mark_line()
         .encode(
-            line_x,
-            line_y,
-            line_color,
+            encoding_year,
+            encoding_gdp,
+            alt.Color(
+                "Country",
+                type="nominal",
+                scale=alt.Scale(scheme="set2"),
+                legend=None,
+            ),
         )
     )
     line_points = (
         alt.Chart(data)
         .mark_point()
         .encode(
-            line_x,
-            line_y,
-            line_color,
-            size=alt.value(scale // 2),
+            encoding_year,
+            encoding_gdp,
+            size=alt.value(chart_size // 30),
             opacity=alt.condition(
                 ~nearest_point_selector,
                 alt.value(0),
@@ -80,19 +77,16 @@ def plot(data):
         )
         .mark_point()
         .encode(
-            line_x,
+            encoding_year,
             opacity=alt.value(0),
             tooltip=[
                 alt.Tooltip(
                     field="Date",
-                    title="Year",
+                    title="title",
                     format="%Y",
                     formatType="time",
                 ),
-                *[
-                    alt.Tooltip(field=country_gdp, format=",.0d")
-                    for country_gdp in countries
-                ],
+                *[country_gdp for country_gdp in countries],
             ],
         )
         .add_selection(nearest_point_selector)
@@ -103,9 +97,9 @@ def plot(data):
         .encode(x="Date:T")
         .transform_filter(nearest_point_selector)
     )
-    chart = (line + line_points + year_points + year_rule).properties(
-        width=scale * width,
-        height=scale * height,
+    chart = (line_points + line + year_points + year_rule).properties(
+        width=chart_size,
+        height=chart_size,
     )
     chart = common.configure_altair_fonts(chart)
     return chart, data
@@ -117,7 +111,7 @@ def main():
         filename="the-two-germanies-planning-and-capitalism.csv",
     )
     chart, data = plot(data)
-    print(common.render(__file__, chart=chart))
+    print(common.render(__file__, chart=chart, custom_tooltip=True))
     return data
 
 
