@@ -97,10 +97,8 @@ def plot(data):
         .encode(x="Date:T")
         .transform_filter(nearest_point_selector)
     )
-    chart = (line_points + line + year_points + year_rule).properties(
-        width=chart_size,
-        height=chart_size,
-    )
+    chart = line_points + line + year_points + year_rule
+    chart = chart.properties(width="container", height=chart_size)
     chart = common.configure_altair_fonts(chart)
     return chart, data
 

@@ -1,10 +1,10 @@
 SHELL  := /bin/bash
-PYTHON := python3.9
+PYTHON ?= python3.9
 
 LIB  := lib
 SRC  := src
 META := metadata
-DST  := out
+DST  ?= out
 
 INDEX    := index
 MODULES  := inequality growth global_warming comparative_advantage the_two_germanies

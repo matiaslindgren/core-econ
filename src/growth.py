@@ -51,9 +51,6 @@ def plot_growth(data):
     gdp_range = [64000 / (2 ** i) for i in range(10)][::-1]
     gdp_title = "GDP (2011 US$)"
 
-    width, height = 14, 8
-    scale = 100
-
     country_selector = alt.selection_multi(fields=["Country"], bind="legend")
     nearest_point_selector = common.altair_selector("Date", "Country")
     base = alt.Chart(data).encode(
@@ -93,10 +90,7 @@ def plot_growth(data):
         .add_selection(country_selector)
         .add_selection(nearest_point_selector)
     )
-    chart = points.properties(
-        width=scale * width,
-        height=scale * height,
-    )
+    chart = points.properties(width="container", height=800)
     chart = common.configure_altair_fonts(chart)
     return chart, data
 

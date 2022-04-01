@@ -3,6 +3,11 @@ body {
   padding: 1rem;
 }
 
+#vega-container {
+  max-width: 1000px;
+  width: 100%;
+}
+
 dl {
   padding-top: 1rem;
   padding-bottom: 1rem;

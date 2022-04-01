@@ -15,9 +15,6 @@ def plot(data):
     )
     data = data[["Year", "Deviation"]]
 
-    width, height = 12, 4
-    scale = 100
-
     nearest_point_selector = common.altair_selector("Year")
     line = (
         alt.Chart(data)
@@ -89,10 +86,8 @@ def plot(data):
         .encode(x="Year:O")
         .transform_filter(nearest_point_selector)
     )
-    chart = (line + year_points + year_rule + zero_rule).properties(
-        width=scale * width,
-        height=scale * height,
-    )
+    chart = line + year_points + year_rule + zero_rule
+    chart = chart.properties(width="container", height=400)
     chart = common.configure_altair_fonts(chart)
     return chart, data
 
