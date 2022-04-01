@@ -64,11 +64,20 @@ function getInput(id) {
     value: parseFloat(input.value),
     min: parseFloat(input.min),
     max: parseFloat(input.max),
-    step: parseFloat(input.step),
   };
 }
 
-function updateState({ skipId }) {
+function updateInput(id, values) {
+  const input = document.getElementById(id);
+  for (const key in values) {
+    if (typeof key !== "undefined") {
+      input[key] = values[key];
+    }
+  }
+  input.nextSibling.innerHTML = input.value;
+}
+
+function updateState({ applyConstraints, skipId }) {
   const format = (x) => (typeof x === "number" ? x.toFixed(1) : x);
   const update = (id, values) => {
     if (id === skipId) {
@@ -76,12 +85,7 @@ function updateState({ skipId }) {
     }
     const input = document.getElementById(id);
     if (input.tagName === "INPUT") {
-      for (const key in values) {
-        if (typeof key !== "undefined") {
-          input[key] = values[key];
-        }
-      }
-      input.nextSibling.innerHTML = input.value;
+      updateInput(id, values);
     } else {
       input.innerHTML = format(values.value);
       if (input.classList.contains("balance")) {
@@ -127,15 +131,16 @@ function updateState({ skipId }) {
   let c_ae = getInput("carlos-apples-exchange");
   let c_we = getInput("carlos-wheat-exchange");
 
-  // Apply constraints to state
-  g_ap = balanceProduction(g_ap, g_wp);
-  g_wp = balanceProduction(g_wp, g_ap);
-  g_ae = exchange(g_ap, g_ae, c_wp, c_we, applesPerWheat());
-  g_we = exchange(g_wp, g_we, c_ap, c_ae, 1 / applesPerWheat());
-  c_ap = balanceProduction(c_ap, c_wp);
-  c_wp = balanceProduction(c_wp, c_ap);
-  c_ae = exchange(c_ap, c_ae, g_wp, g_we, applesPerWheat());
-  c_we = exchange(c_wp, c_we, g_ap, g_ae, 1 / applesPerWheat());
+  if (applyConstraints) {
+    g_ap = balanceProduction(g_ap, g_wp);
+    g_wp = balanceProduction(g_wp, g_ap);
+    g_ae = exchange(g_ap, g_ae, c_wp, c_we, applesPerWheat());
+    g_we = exchange(g_wp, g_we, c_ap, c_ae, 1 / applesPerWheat());
+    c_ap = balanceProduction(c_ap, c_wp);
+    c_wp = balanceProduction(c_wp, c_ap);
+    c_ae = exchange(c_ap, c_ae, g_wp, g_we, applesPerWheat());
+    c_we = exchange(c_wp, c_we, g_ap, g_ae, 1 / applesPerWheat());
+  }
 
   // Compute balance
   const g_ab = {
@@ -180,7 +185,7 @@ function rangeInput({ id, min, max, step, init }) {
   value.innerHTML = init;
   input.oninput = (e) => {
     value.innerHTML = e.target.value;
-    updateState({ skipId: id });
+    updateState({ applyConstraints: true, skipId: id });
   };
   const container = document.createElement("span");
   container.appendChild(input);
@@ -197,6 +202,13 @@ function spanWithId(id, className) {
   return span;
 }
 
+function button(label, onclick) {
+  const btn = document.createElement("button");
+  btn.innerText = label;
+  btn.onclick = onclick;
+  return btn;
+}
+
 function main() {
   let e = document.querySelector("#table-max-production tbody");
   e.innerHTML = "";
@@ -204,11 +216,8 @@ function main() {
   e.appendChild(getMaxProd("Greta"));
   e.appendChild(getMaxProd("Carlos"));
 
-  const applesStep = 1;
-  const wheatStep = Math.min(
-    data.greta.wheat.max / data.greta.apples.max,
-    data.carlos.wheat.max / data.carlos.apples.max
-  );
+  const applesStep = 5;
+  const wheatStep = 0.02;
   e = document.querySelector("#grid-input");
   e.innerHTML = "";
   addGridRow(e, ["", "", "", "Produce", "Exchange", "Consume", "Balance"]);
@@ -300,12 +309,45 @@ function main() {
     -data.carlos.wheat.consume,
     spanWithId("carlos-wheat-balance", "balance"),
   ]);
+  addGridRow(
+    e,
+    Array.from(new Array(7), () => "")
+  );
+  addGridRow(e, [
+    "",
+    "",
+    "",
+    button("Full autarky", (_) => {
+      updateInput("greta-apples-exchange", { value: 0 });
+      updateInput("greta-wheat-exchange", { value: 0 });
+      updateInput("greta-apples-produce", { value: data.greta.apples.consume });
+      updateInput("greta-wheat-produce", { value: data.greta.wheat.consume });
+      updateInput("carlos-apples-exchange", { value: 0 });
+      updateInput("carlos-wheat-exchange", { value: 0 });
+      updateInput("carlos-apples-produce", { value: data.carlos.apples.consume });
+      updateInput("carlos-wheat-produce", { value: data.carlos.wheat.consume });
+      updateState({ applyConstraints: false, skipId: null });
+    }),
+    button("Full specialization", (_) => {
+      updateInput("greta-apples-exchange", { value: 0 });
+      updateInput("greta-wheat-exchange", { value: 15 });
+      updateInput("greta-apples-produce", { value: 0 });
+      updateInput("greta-wheat-produce", { value: data.greta.wheat.max });
+      updateInput("carlos-apples-exchange", { value: 600 });
+      updateInput("carlos-wheat-exchange", { value: 0 });
+      updateInput("carlos-apples-produce", { value: data.carlos.apples.max });
+      updateInput("carlos-wheat-produce", { value: 0 });
+      updateState({ applyConstraints: false, skipId: null });
+    }),
+    "",
+    "",
+  ]);
 
   document.getElementById("wheat-to-apples-xrate").oninput = (e) => {
-    updateState({ skipId: null });
+    updateState({ applyConstraints: true, skipId: null });
   };
 
-  updateState({ skipId: null });
+  updateState({ applyConstraints: true, skipId: null });
 }
 
 window.addEventListener("DOMContentLoaded", main);
