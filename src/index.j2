@@ -1,7 +1,6 @@
 {% extends 'base.j2' %}
 
 {% block body %}
-    <h2>Chapters</h2>
     <ol>
     {% for module_name, metadata in modules.items() %}
         <li><a href="./{{ module_name }}.html">{{ metadata.title }}</a></li>

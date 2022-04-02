@@ -3,6 +3,14 @@ body {
   padding: 1rem;
 }
 
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 #vega-container {
   max-width: 1000px;
   width: 100%;
