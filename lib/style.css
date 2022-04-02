@@ -8,6 +8,15 @@ body {
   width: 100%;
 }
 
+form.vega-bindings .vega-bind label {
+  display: grid;
+  grid-template-columns: 6em 14em 6em;
+}
+
+form.vega-bindings .vega-bind label span {
+  margin-left: 0.5em;
+}
+
 dl {
   padding-top: 1rem;
   padding-bottom: 1rem;
