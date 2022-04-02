@@ -35,12 +35,11 @@ def plot_income(data):
 
     income_label = "GDP ($ PPP)"
 
-    slider = alt.binding_range(min=income.Year.min(), max=income.Year.max(), step=1)
-    select_year = alt.selection_single(
-        name="Year",
-        fields=["Year"],
-        bind=slider,
-        init={"Year": income.Year.min()},
+    select_year = common.altair_range_input(
+        field="Year",
+        init=income.Year.min(),
+        min=income.Year.min(),
+        max=income.Year.max(),
     )
     deciles_heatmap = (
         alt.Chart(income)

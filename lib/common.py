@@ -124,3 +124,16 @@ def altair_selector(*fields, **kwargs):
             **kwargs,
         ),
     )
+
+
+def altair_range_input(*, field, init, name=None, min=1, max=100, step=1):
+    return alt.selection_single(
+        fields=[field],
+        bind=alt.binding_range(
+            min=min,
+            max=max,
+            step=step,
+            name=f"{name or field}:",
+        ),
+        init={field: init},
+    )
