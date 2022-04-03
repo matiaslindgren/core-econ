@@ -84,20 +84,19 @@ def read_data(fn, url=None, filename=None, **kwargs):
 eprint = functools.partial(print, file=sys.stderr)
 
 
-def altair_chart_to_json(chart, renderer="canvas", actions=False, **opt):
+def altair_chart_to_json(chart, **options):
     spec = chart.to_json()
-    opt = dict(renderer=renderer, actions=actions, **opt)
-    opt = json.dumps(opt)
-    return spec, opt
+    default_options = {"renderer": "canvas", "actions": False}
+    return spec, json.dumps(default_options | options)
 
 
 def configure_altair_fonts(chart, **config):
-    default_config = dict(
-        titleFontSize=16,
-        labelFontSize=14,
-        titleFont="Georgia",
-        labelFont="Georgia",
-    )
+    default_config = {
+        "titleFontSize": 16,
+        "labelFontSize": 14,
+        "titleFont": "Georgia",
+        "labelFont": "Georgia",
+    }
     config = default_config | config
     title_config = {}
     if "titleFontSize" in config:
@@ -112,17 +111,23 @@ def configure_altair_fonts(chart, **config):
     )
 
 
-def altair_selector(*fields, **kwargs):
+def altair_selector(
+    *fields,
+    type="single",
+    on="mouseover",
+    clear="mouseout",
+    nearest=True,
+    empty="none",
+    **kwargs,
+):
     return alt.selection(
         fields=fields,
-        **dict(
-            type="single",
-            on="mouseover",
-            clear="mouseout",
-            nearest=True,
-            empty="none",
-            **kwargs,
-        ),
+        type=type,
+        on=on,
+        clear=clear,
+        nearest=nearest,
+        empty=empty,
+        **kwargs,
     )
 
 

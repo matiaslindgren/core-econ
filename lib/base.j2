@@ -28,9 +28,7 @@
   </head>
 
   <body>
-    {% if module_name != 'index' %}
-      <a href="index.html">go back</a>
-    {% endif %}
+    <a {% if module_name == 'index' %}style='opacity:0;'{% else %}href="index.html"{% endif %}>go back</a>
     <h1>{{ metadata.title }}</h1>
     <dl>
       <dt>Created at</dt>
