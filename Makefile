@@ -7,7 +7,7 @@ META := metadata
 DST  ?= out
 
 INDEX    := index
-MODULES  := inequality growth global_warming comparative_advantage the_two_germanies tech_and_cost malthus_escape
+MODULES  := inequality growth global_warming comparative_advantage the_two_germanies tech_and_cost malthus_escape marginal_product
 LIB_DEPS := base.j2 common.py style.css chart.js
 
 LIB_FILES  := $(addprefix $(LIB)/,$(LIB_DEPS))
