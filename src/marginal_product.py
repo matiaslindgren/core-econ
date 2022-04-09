@@ -13,9 +13,9 @@ def plot():
     mp = np.diff(y, prepend=[0])
     data = pd.concat(
         [
-            pd.DataFrame({"x": x, "y": y, "grade": "final"}),
-            pd.DataFrame({"x": x, "y": ap, "grade": "average"}),
-            pd.DataFrame({"x": x, "y": mp, "grade": "marginal"}),
+            pd.DataFrame({"x": x, "y": y, "grade": "Final grade"}),
+            pd.DataFrame({"x": x, "y": ap, "grade": "Average product"}),
+            pd.DataFrame({"x": x, "y": mp, "grade": "Marginal product"}),
         ]
     )
 
@@ -29,10 +29,14 @@ def plot():
             ),
             y=alt.Y(
                 "y:Q",
-                title="Grade",
+                title="Final grade",
                 scale=alt.Scale(domainMin=0, domainMax=95),
             ),
-            color="grade:N",
+            color=alt.Color(
+                "grade:N",
+                title="Grade",
+                sort=["Final grade", "Average product", "Marginal product"],
+            ),
         )
     )
 
@@ -43,13 +47,13 @@ def plot():
         .add_selection(x_selector)
         .encode(
             x="x:Q",
-            y="final:Q",
+            y="Final grade:Q",
             opacity=alt.value(0),
             tooltip=[
                 alt.Tooltip("x:Q", title=grade_lines.encoding.x.title),
-                alt.Tooltip("final:Q", title="Final grade", format=".1f"),
-                alt.Tooltip("average:Q", title="Average product", format=".1f"),
-                alt.Tooltip("marginal:Q", title="Marginal product", format=".1f"),
+                alt.Tooltip("Final grade:Q", format=".1f"),
+                alt.Tooltip("Average product:Q", format=".1f"),
+                alt.Tooltip("Marginal product:Q", format=".1f"),
             ],
         )
     )
