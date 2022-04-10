@@ -43,6 +43,7 @@ def plot(data):
         axis=alt.Axis(grid=True, title=gdp_title, values=gdp_range),
         scale=alt.Scale(type="log", base=2),
     )
+
     line = (
         alt.Chart(data)
         .mark_line()
@@ -71,7 +72,14 @@ def plot(data):
             ),
         )
     )
-    year_points = (
+    year_rule = (
+        alt.Chart(data)
+        .mark_rule(color="gray")
+        .encode(x="Date:T")
+        .transform_filter(nearest_point_selector)
+    )
+
+    tooltip_points = (
         alt.Chart(
             data.pivot(index="Date", columns="Country", values="GDP").reset_index()
         )
@@ -86,20 +94,16 @@ def plot(data):
                     format="%Y",
                     formatType="time",
                 ),
-                *[country_gdp for country_gdp in countries],
+                *countries,
             ],
         )
         .add_selection(nearest_point_selector)
     )
-    year_rule = (
-        alt.Chart(data)
-        .mark_rule(color="gray")
-        .encode(x="Date:T")
-        .transform_filter(nearest_point_selector)
-    )
-    chart = line_points + line + year_points + year_rule
+
+    chart = line_points + line + year_rule + tooltip_points
     chart = chart.properties(width="container", height=chart_size)
     chart = common.configure_altair_fonts(chart)
+
     return chart, data
 
 
