@@ -31,8 +31,8 @@
     <a {% if module_name == 'index' %}style='opacity:0;'{% else %}href="index.html"{% endif %}>go back</a>
     <h1>{{ metadata.title }}</h1>
     <dl>
-      <dt>Created at</dt>
-      <dd>{{ created_at }}</dd>
+      <dt>Updated at</dt>
+      <dd>{{ updated_at }}</dd>
       {% if metadata.desc %}
         <dt>Description</dt>
         <dd>{{ metadata.desc }}</dd>
@@ -48,6 +48,9 @@
         <dd><a href="{{ metadata.chapter_url }}">{{ metadata.chapter }}</a></dd>
       {% endif %}
     </dl>
+
+    {% block body_before_chart %}
+    {% endblock %}
 
     {% if has_chart %}
       <div id="vega-container"></div>

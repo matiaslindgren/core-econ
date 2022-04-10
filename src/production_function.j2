@@ -1,0 +1,21 @@
+{% extends 'base.j2' %}
+
+{% block head %}
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css"
+      integrity="sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB"
+      crossorigin="anonymous">
+<script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+        integrity="sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p"
+        crossorigin="anonymous">
+</script>
+{% endblock %}
+
+{% block body_before_chart %}
+<p class='equations'>
+Let <span class="katex-input">f(h) = A \cdot h ^ \alpha</span> be the production function of the final grade, where <span class='katex-input'>h</span> is the amount of study hours.
+<span class='katex-input'>A</span> and <span class='katex-input'>\alpha</span> are constants that can be chosen below.
+</p>
+<script>{% include 'production_function.js' %}</script>
+{% endblock %}

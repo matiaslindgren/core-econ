@@ -59,7 +59,7 @@ def render(module, chart=None, **extra_context):
     context = {
         "module_name": module_name(module),
         "metadata": module_metadata(module),
-        "created_at": today(),
+        "updated_at": today(),
         "has_chart": False,
         "custom_tooltip": False,
     }
