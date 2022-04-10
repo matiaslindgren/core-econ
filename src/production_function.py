@@ -6,40 +6,49 @@ import common
 
 
 def plot():
+    hours = pd.DataFrame({"hours": np.linspace(0, 24, 200)})
+    dh = hours.hours.diff()[1]
+    linetypes = ["Final grade", "Average product", "Marginal product"]
+    data = hours.merge(pd.DataFrame({"type": linetypes}), how="cross")
+
     A_input = common.altair_range_input(
         name="A",
         field="A",
-        init=20,
         min=1,
         max=40,
+        init=24,
     )
     alpha_input = common.altair_range_input(
         name="α",
         field="alpha",
-        init=0.5,
         min=0.01,
         max=0.99,
         step=0.01,
+        init=0.6,
+    )
+    max_grade_input = common.altair_range_input(
+        name="Max grade",
+        field="max_grade",
+        min=0,
+        max=100,
+        init=90,
     )
 
     def f(h):
         h = alt.expr.max(0, h)
         y = A_input.A * h ** alpha_input.alpha
-        return alt.expr.min(90, y)
+        return alt.expr.min(max_grade_input.max_grade, y)
 
     prod_func = f(alt.datum.hours)
     avg_prod = prod_func / alt.expr.max(1, alt.datum.hours)
-    marginal_prod = prod_func - f(alt.datum.hours - 1)
-
-    hours = pd.DataFrame({"hours": np.linspace(0, 24, 200)})
-    linetypes = ["Final grade", "Average product", "Marginal product"]
-    data = hours.merge(pd.DataFrame({"type": linetypes}), how="cross")
+    marginal_prod = (prod_func - f(alt.datum.hours - dh)) / dh
 
     lines = (
         alt.Chart(data)
         .mark_line(clip=True)
         .add_selection(A_input)
         .add_selection(alpha_input)
+        .add_selection(max_grade_input)
         .transform_calculate(
             y=(alt.datum.type == "Final grade") * prod_func
             + (alt.datum.type == "Average product") * avg_prod
@@ -91,7 +100,7 @@ def plot():
     chart = chart.properties(
         width=600,
         height=400,
-        title="Alexei's production function: input study hours, output final grade",
+        title="Production function: input study hours, output final grade",
     )
     chart = common.configure_altair_fonts(chart)
 
