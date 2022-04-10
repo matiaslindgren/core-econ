@@ -19,7 +19,7 @@ make -j run
 
 ### Long version
 
-1. Install Python dependencies (if virtualenv is preferred, use it here)
+1. Install Python dependencies (if virtualenv is preferred, create and activate it first)
     ```bash
     python3.9 -m pip install --user -r requirements.txt
     ```
