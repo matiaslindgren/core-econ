@@ -14,8 +14,8 @@
 
 {% block body_before_chart %}
 <p class='equations'>
-Let <span class="katex-input">f(h) = A h ^ \alpha</span> be a production function for the final grade, where <span class='katex-input'>h</span> is the amount of study hours.
-<span class='katex-input'>A</span> and <span class='katex-input'>\alpha</span> are constants that can be chosen below.
+Let <span class="katex-input">f(h) = \min(m, A h ^ \alpha)</span> be a production function for the final grade, where <span class='katex-input'>h</span> is the amount of study hours and <span class='katex-input'>m</span> the maximum grade regardless of study effort.
+<span class='katex-input'>A</span> and <span class='katex-input'>\alpha</span> are constants.
 </p>
 <script>{% include 'production_function.js' %}</script>
 {% endblock %}

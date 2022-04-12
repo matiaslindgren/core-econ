@@ -26,9 +26,9 @@ def plot():
         step=0.01,
         init=0.6,
     )
-    max_grade_input = common.altair_range_input(
-        name="Max grade",
-        field="max_grade",
+    m_input = common.altair_range_input(
+        name="m",
+        field="m",
         min=0,
         max=100,
         init=90,
@@ -37,7 +37,7 @@ def plot():
     def f(h):
         h = alt.expr.max(0, h)
         y = A_input.A * h ** alpha_input.alpha
-        return alt.expr.min(max_grade_input.max_grade, y)
+        return alt.expr.min(m_input.m, y)
 
     prod_func = f(alt.datum.hours)
     avg_prod = prod_func / alt.expr.max(1, alt.datum.hours)
@@ -48,7 +48,7 @@ def plot():
         .mark_line(clip=True)
         .add_selection(A_input)
         .add_selection(alpha_input)
-        .add_selection(max_grade_input)
+        .add_selection(m_input)
         .transform_calculate(
             y=(alt.datum.type == "Final grade") * prod_func
             + (alt.datum.type == "Average product") * avg_prod
