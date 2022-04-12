@@ -142,3 +142,16 @@ def altair_range_input(*, field, init, name=None, min=1, max=100, step=1):
         ),
         init={field: init},
     )
+
+
+def altair_replace(obj, **values):
+    obj = obj.copy()
+    for k, v in values.items():
+        obj[k] = v
+    return obj
+
+
+def reindex_multiple_columns(data, *index_columns, **reindex_kw):
+    index_values = (data[col].dropna().unique() for col in index_columns)
+    index = pd.MultiIndex.from_product(index_values, names=index_columns)
+    return data.set_index(index.names).reindex(index, **reindex_kw)

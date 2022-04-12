@@ -3,6 +3,8 @@ title: >
 desc: >
   Comparing income by GDP (US$ PPP) deciles from 1st (poor) to 10th (rich).
   Inequality is defined as the ratio of "rich-to-poor", ie. 10th Decile GDP / 1st Decile GDP.
+
+  Some data is missing and will be shown as blank in the charts.
 src: >
   Jack Blundell, (2022) "Globalinc: Visualisation of the Global Income Distribution since 1980"
 url: https://jackblun.github.io/Globalinc/

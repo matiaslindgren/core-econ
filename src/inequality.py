@@ -12,19 +12,19 @@ DATA_URL = "https://raw.githubusercontent.com/jackblun/Globalinc/master/GCIPrawd
 
 
 def plot_income(data):
+    data = common.reindex_multiple_columns(data, "Country", "Year")
     data["Inequality"] = data["Decile 10 Income"] / data["Decile 1 Income"]
-    inequality = data[["Country", "Year", "Inequality"]].copy()
+    inequality = data.Inequality.copy()
 
     income = data.melt(
-        id_vars=["Country", "Year"],
         value_vars=[f"Decile {i} Income" for i in range(1, 11)],
         value_name="Income",
         var_name="Decile",
+        ignore_index=False,
     )
     income.Decile = income.Decile.str.split(expand=True)[1].astype(int)
+    income = income.join(inequality)
     income = income.reset_index()
-    income = income.merge(inequality, how="left", on=["Country", "Year"])
-    income = income.drop(["index"], axis="columns")
 
     width, height = 2, 16
     width_ratio = 0.1
@@ -33,8 +33,9 @@ def plot_income(data):
     deciles_width = scale * (1 - width_ratio) * width
     inequality_width = scale * width_ratio * width
 
-    income_label = "GDP ($ PPP)"
+    income_label = "GDP (US$ PPP)"
 
+    chart = alt.Chart(income)
     select_year = common.altair_range_input(
         field="Year",
         init=income.Year.min(),
@@ -42,23 +43,22 @@ def plot_income(data):
         max=income.Year.max(),
     )
     deciles_heatmap = (
-        alt.Chart(income)
-        .mark_rect()
+        chart.mark_rect()
         .encode(
-            alt.X(
+            x=alt.X(
                 "Decile",
                 type="ordinal",
                 axis=alt.Axis(title="Income decile", orient="top", labelAngle=0),
                 scale=alt.Scale(padding=0),
             ),
-            alt.Y(
+            y=alt.Y(
                 "Country",
                 type="nominal",
                 sort=alt.Sort(op="median", field="Income", order="descending"),
                 axis=alt.Axis(title=None),
                 scale=alt.Scale(padding=0),
             ),
-            alt.Color(
+            color=alt.Color(
                 "Income",
                 type="quantitative",
                 legend=alt.Legend(
@@ -81,20 +81,19 @@ def plot_income(data):
                 alt.Tooltip(field="Income", title=income_label, format=","),
             ],
         )
-        .properties(width=deciles_width, height=scale * height)
+        .properties(
+            width=deciles_width,
+            height=scale * height,
+        )
     )
     inequality_heatmap = (
-        alt.Chart(income)
-        .mark_rect()
+        chart.mark_rect()
         .encode(
-            alt.Y(
-                "Country",
-                type="nominal",
-                sort=alt.Sort(op="median", field="Income", order="descending"),
+            y=common.altair_replace(
+                deciles_heatmap.encoding.y,
                 axis=alt.Axis(title=None, labels=False),
-                scale=alt.Scale(padding=0),
             ),
-            alt.Color(
+            color=alt.Color(
                 "Inequality",
                 type="quantitative",
                 legend=None,
@@ -106,17 +105,22 @@ def plot_income(data):
                 alt.Tooltip(field="Inequality", format=".1f"),
             ],
         )
-        .properties(title="Inequality", width=inequality_width, height=scale * height)
+        .properties(
+            title="Inequality",
+            width=inequality_width,
+            height=scale * height,
+        )
     )
-    chart = (deciles_heatmap | inequality_heatmap).resolve_scale(color="independent")
+    chart = deciles_heatmap | inequality_heatmap
     chart = (
-        chart.add_selection(select_year)
+        chart.resolve_scale(color="independent")
+        .add_selection(select_year)
         .transform_filter(select_year)
         .configure_view(strokeWidth=0)
         .configure_axis(grid=False)
     )
     chart = common.configure_altair_fonts(chart)
-    return chart, data
+    return chart, income
 
 
 def main():
