@@ -81,13 +81,16 @@ def plot(data):
 
     tooltip_points = (
         alt.Chart(
-            data.pivot(index="Date", columns="Country", values="GDP").reset_index()
+            data.assign(datatype="gdp")
+            .pivot(index=["Date", "datatype"], columns="Country", values="GDP")
+            .reset_index()
         )
         .mark_point()
         .encode(
             encoding_year,
             opacity=alt.value(0),
             tooltip=[
+                alt.Tooltip("datatype"),
                 alt.Tooltip(
                     field="Date",
                     title="title",
@@ -100,7 +103,19 @@ def plot(data):
         .add_selection(nearest_point_selector)
     )
 
-    chart = line_points + line + year_rule + tooltip_points
+    chart = alt.layer(
+        line_points,
+        line,
+        year_rule,
+        tooltip_points,
+        usermeta={
+            "customTooltip": {
+                "formatter": {
+                    "gdp": {"name": "USD", "digits": 4},
+                }
+            }
+        },
+    )
     chart = chart.properties(width="container", height=chart_size)
     chart = common.configure_altair_fonts(chart)
 
@@ -113,7 +128,7 @@ def main():
         filename="the-two-germanies-planning-and-capitalism.csv",
     )
     chart, data = plot(data)
-    print(common.render(__file__, chart=chart, custom_tooltip=True))
+    print(common.render(__file__, chart=chart))
     return data
 
 

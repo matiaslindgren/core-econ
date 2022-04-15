@@ -68,7 +68,7 @@
         {% include 'chart.js' %}
         const spec = {{ vega_spec }};
         const options = {{ vega_opt }};
-        buildChart(spec, options, {{ 'true' if custom_tooltip else 'false' }});
+        buildChart(spec, options);
       </script>
       <div id='custom-tooltip-element'></div>
     {% endif %}
