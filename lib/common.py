@@ -61,14 +61,11 @@ def render(module, chart=None, **extra_context):
         "metadata": module_metadata(module),
         "updated_at": today(),
         "has_chart": False,
-        "custom_tooltip": False,
     }
     if chart:
         context["vega_spec"], context["vega_opt"] = altair_chart_to_json(chart)
         context["has_chart"] = True
-    html = template.render(**(context | extra_context))
-    tree = bs4.BeautifulSoup(html, features="html.parser")
-    return tree.prettify()
+    return template.render(**(context | extra_context))
 
 
 @memory.cache
