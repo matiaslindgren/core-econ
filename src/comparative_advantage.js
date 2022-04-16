@@ -3,20 +3,24 @@ const data = {
     apples: {
       max: 1250,
       consume: 500,
+      initExport: 0,
     },
     wheat: {
       max: 50,
       consume: 30,
+      initExport: 15,
     },
   },
   carlos: {
     apples: {
       max: 1000,
       consume: 300,
+      initExport: 600,
     },
     wheat: {
       max: 20,
       consume: 14,
+      initExport: 0,
     },
   },
 };
@@ -123,19 +127,21 @@ function updateState({ applyConstraints, skipId }) {
 
   // Get current state
   let g_ap = getInput("greta-apples-produce");
+  let g_ae = getInput("greta-apples-export");
   let g_wp = getInput("greta-wheat-produce");
-  let g_ae = getInput("greta-apples-exchange");
-  let g_we = getInput("greta-wheat-exchange");
+  let g_we = getInput("greta-wheat-export");
+
   let c_ap = getInput("carlos-apples-produce");
+  let c_ae = getInput("carlos-apples-export");
   let c_wp = getInput("carlos-wheat-produce");
-  let c_ae = getInput("carlos-apples-exchange");
-  let c_we = getInput("carlos-wheat-exchange");
+  let c_we = getInput("carlos-wheat-export");
 
   if (applyConstraints) {
     g_ap = balanceProduction(g_ap, g_wp);
     g_wp = balanceProduction(g_wp, g_ap);
     g_ae = exchange(g_ap, g_ae, c_wp, c_we, applesPerWheat());
     g_we = exchange(g_wp, g_we, c_ap, c_ae, 1 / applesPerWheat());
+
     c_ap = balanceProduction(c_ap, c_wp);
     c_wp = balanceProduction(c_wp, c_ap);
     c_ae = exchange(c_ap, c_ae, g_wp, g_we, applesPerWheat());
@@ -149,6 +155,7 @@ function updateState({ applyConstraints, skipId }) {
   const g_wb = {
     value: g_wp.value + c_we.value - g_we.value - data.greta.wheat.consume,
   };
+
   const c_ab = {
     value: c_ap.value + g_ae.value - c_ae.value - data.carlos.apples.consume,
   };
@@ -158,17 +165,23 @@ function updateState({ applyConstraints, skipId }) {
 
   // Update state
   update("greta-apples-produce", g_ap);
-  update("greta-wheat-produce", g_wp);
-  update("greta-apples-exchange", g_ae);
-  update("greta-wheat-exchange", g_we);
+  update("greta-apples-export", g_ae);
+  update("greta-apples-import", c_ae);
   update("greta-apples-balance", g_ab);
+  update("greta-wheat-produce", g_wp);
+  update("greta-wheat-export", g_we);
+  update("greta-wheat-import", c_we);
   update("greta-wheat-balance", g_wb);
+
   update("carlos-apples-produce", c_ap);
-  update("carlos-wheat-produce", c_wp);
-  update("carlos-apples-exchange", c_ae);
-  update("carlos-wheat-exchange", c_we);
+  update("carlos-apples-export", c_ae);
+  update("carlos-apples-import", g_ae);
   update("carlos-apples-balance", c_ab);
+  update("carlos-wheat-produce", c_wp);
+  update("carlos-wheat-export", c_we);
+  update("carlos-wheat-import", g_we);
   update("carlos-wheat-balance", c_wb);
+
   updateFace({ id: "greta-state", isDead: g_ab.value < 0 || g_wb.value < 0 });
   updateFace({ id: "carlos-state", isDead: c_ab.value < 0 || c_wb.value < 0 });
 }
@@ -220,7 +233,9 @@ function main() {
   const wheatStep = 0.02;
   e = document.querySelector("#grid-input");
   e.innerHTML = "";
-  addGridRow(e, ["", "", "", "Produce", "Exchange", "Consume", "Balance"]);
+  const headerRow = ["", "", "", "Produce", "Export", "Import", "Consume", "Balance"];
+  const emptyRow = Array.from(headerRow, () => "");
+  addGridRow(e, headerRow);
   addGridRow(e, [
     "Greta",
     spanWithId("greta-state"),
@@ -233,12 +248,13 @@ function main() {
       init: 0,
     }),
     rangeInput({
-      id: "greta-apples-exchange",
+      id: "greta-apples-export",
       min: 0,
       max: 0,
       step: applesStep,
       init: 0,
     }),
+    spanWithId("greta-apples-import"),
     -data.greta.apples.consume,
     spanWithId("greta-apples-balance", "balance"),
   ]);
@@ -254,19 +270,17 @@ function main() {
       init: data.greta.wheat.max,
     }),
     rangeInput({
-      id: "greta-wheat-exchange",
+      id: "greta-wheat-export",
       min: 0,
-      max: 15,
+      max: data.greta.wheat.max,
       step: wheatStep,
-      init: 15,
+      init: data.greta.wheat.initExport,
     }),
+    spanWithId("greta-wheat-import"),
     -data.greta.wheat.consume,
     spanWithId("greta-wheat-balance", "balance"),
   ]);
-  addGridRow(
-    e,
-    Array.from(new Array(7), () => "")
-  );
+  addGridRow(e, emptyRow);
   addGridRow(e, [
     "Carlos",
     spanWithId("carlos-state"),
@@ -279,12 +293,13 @@ function main() {
       init: data.carlos.apples.max,
     }),
     rangeInput({
-      id: "carlos-apples-exchange",
+      id: "carlos-apples-export",
       min: 0,
       max: data.carlos.apples.max,
       step: applesStep,
-      init: 600,
+      init: data.carlos.apples.initExport,
     }),
+    spanWithId("carlos-apples-import"),
     -data.carlos.apples.consume,
     spanWithId("carlos-apples-balance", "balance"),
   ]);
@@ -300,44 +315,43 @@ function main() {
       init: 0,
     }),
     rangeInput({
-      id: "carlos-wheat-exchange",
+      id: "carlos-wheat-export",
       min: 0,
       max: data.carlos.wheat.max,
       step: wheatStep,
       init: 0,
     }),
+    spanWithId("carlos-wheat-import"),
     -data.carlos.wheat.consume,
     spanWithId("carlos-wheat-balance", "balance"),
   ]);
-  addGridRow(
-    e,
-    Array.from(new Array(7), () => "")
-  );
+  addGridRow(e, emptyRow);
   addGridRow(e, [
     "",
     "",
     "",
-    button("Full autarky", (_) => {
-      updateInput("greta-apples-exchange", { value: 0 });
-      updateInput("greta-wheat-exchange", { value: 0 });
+    button("Total autarky", (_) => {
       updateInput("greta-apples-produce", { value: data.greta.apples.consume });
+      updateInput("greta-apples-export", { value: 0 });
       updateInput("greta-wheat-produce", { value: data.greta.wheat.consume });
-      updateInput("carlos-apples-exchange", { value: 0 });
-      updateInput("carlos-wheat-exchange", { value: 0 });
+      updateInput("greta-wheat-export", { value: 0 });
       updateInput("carlos-apples-produce", { value: data.carlos.apples.consume });
+      updateInput("carlos-apples-export", { value: 0 });
       updateInput("carlos-wheat-produce", { value: data.carlos.wheat.consume });
+      updateInput("carlos-wheat-export", { value: 0 });
       updateState({ applyConstraints: false, skipId: null });
     }),
     button("Full specialization", (_) => {
-      updateInput("greta-apples-exchange", { value: 0 });
-      updateInput("greta-wheat-exchange", { value: 15 });
       updateInput("greta-apples-produce", { value: 0 });
+      updateInput("greta-apples-export", { value: data.greta.apples.initExport });
       updateInput("greta-wheat-produce", { value: data.greta.wheat.max });
-      updateInput("carlos-apples-exchange", { value: 600 });
-      updateInput("carlos-wheat-exchange", { value: 0 });
+      updateInput("greta-wheat-export", { value: data.greta.wheat.initExport });
       updateInput("carlos-apples-produce", { value: data.carlos.apples.max });
+      updateInput("carlos-apples-export", { value: data.carlos.apples.initExport });
       updateInput("carlos-wheat-produce", { value: 0 });
+      updateInput("carlos-wheat-export", { value: data.carlos.wheat.initExport });
       updateState({ applyConstraints: false, skipId: null });
+      updateState({ applyConstraints: true, skipId: null });
     }),
     "",
     "",
