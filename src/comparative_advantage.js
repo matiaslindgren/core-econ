@@ -23,6 +23,11 @@ const data = {
       initExport: 0,
     },
   },
+  emoji: {
+    dead: "&#x1F480;",
+    neutral: "&#x1F610;",
+    happy: "&#x1F60A;",
+  },
 };
 
 function applesPerWheat() {
@@ -103,9 +108,16 @@ function updateState({ applyConstraints, skipId }) {
       }
     }
   };
-  const updateFace = ({ id, isDead }) => {
-    const face = document.getElementById(id);
-    face.innerHTML = isDead ? "&#x1F480;" : "&#x1F60A;";
+  const updateFace = ({ faceId, balance }) => {
+    let face;
+    if (balance < 0) {
+      face = data.emoji.dead;
+    } else if (balance === 0) {
+      face = data.emoji.neutral;
+    } else {
+      face = data.emoji.happy;
+    }
+    document.getElementById(faceId).innerHTML = face;
   };
   const balanceProduction = (a, b) => {
     if (a.id === skipId) {
@@ -182,8 +194,8 @@ function updateState({ applyConstraints, skipId }) {
   update("carlos-wheat-import", g_we);
   update("carlos-wheat-balance", c_wb);
 
-  updateFace({ id: "greta-state", isDead: g_ab.value < 0 || g_wb.value < 0 });
-  updateFace({ id: "carlos-state", isDead: c_ab.value < 0 || c_wb.value < 0 });
+  updateFace({ faceId: "greta-state", balance: Math.min(g_ab.value, g_wb.value) });
+  updateFace({ faceId: "carlos-state", balance: Math.min(c_ab.value, c_wb.value) });
 }
 
 function rangeInput({ id, min, max, step, init }) {
@@ -357,11 +369,16 @@ function main() {
     "",
   ]);
 
-  document.getElementById("wheat-to-apples-xrate").oninput = (e) => {
+  const applyNewRates = document.getElementById("xrate-apply");
+  const updateAll = (_) => {
     updateState({ applyConstraints: true, skipId: null });
+    applyNewRates.disabled = true;
   };
-
-  updateState({ applyConstraints: true, skipId: null });
+  applyNewRates.onclick = updateAll;
+  document.getElementById("wheat-to-apples-xrate").oninput = (_) => {
+    applyNewRates.disabled = false;
+  };
+  updateAll(null);
 }
 
 window.addEventListener("DOMContentLoaded", main);
