@@ -91,7 +91,7 @@ def plot(hours, wages, begin_year=1992):
                 x=line.encoding.x,
                 opacity=alt.value(0),
                 tooltip=[
-                    alt.Tooltip("datatype"),
+                    "datatype",
                     alt.Tooltip(
                         field="year",
                         title="title",
