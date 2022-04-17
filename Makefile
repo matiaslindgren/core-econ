@@ -21,11 +21,6 @@ DST_FILES_NOJS := $(addprefix $(DST)/,$(addsuffix .html,$(MODULES_NOJS)))
 DST_FILES      := $(DST_FILES_NOJS) $(DST_FILES_JS)
 
 
-vpath %.py   $(SRC)
-vpath %.j2   $(SRC)
-vpath %.js   $(SRC)
-vpath %.yaml $(META)
-
 .PHONY: all clean dirs install run
 
 
@@ -42,13 +37,13 @@ install:
 $(DST):
 	mkdir -pv $(DST)
 
-$(DST)/$(INDEX).html: $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(LIB_FILES) $(SRC_FILES) $(META_FILES) %.j2 | dirs
+$(DST)/$(INDEX).html: $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(SRC)/%.j2 $(LIB_FILES) $(SRC_FILES) $(META_FILES) | dirs
 	PYTHONPATH=./$(LIB) $(PYTHON) $< $(MODULES) > $@
 
 $(DST_FILES_NOJS): $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(LIB_FILES) | dirs
 	PYTHONPATH=./$(LIB) $(PYTHON) $< > $@
 
-$(DST_FILES_JS): $(DST)/%.html: $(SRC)/%.py $(META)/%.yaml $(SRC)/%.j2 $(SRC)/%.js $(LIB_FILES) | dirs
+$(DST_FILES_JS): $(DST)/%.html: $(addprefix $(SRC)/,%.py %.j2 %.js) $(META)/%.yaml $(LIB_FILES) | dirs
 	PYTHONPATH=./$(LIB) $(PYTHON) $< > $@
 
 run: $(DST_FILES) | install
