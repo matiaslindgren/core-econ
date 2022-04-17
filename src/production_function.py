@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import altair as alt
 import numpy as np
 import pandas as pd
@@ -11,33 +13,35 @@ def plot():
     linetypes = ["Final grade", "Average product", "Marginal product"]
     data = hours.merge(pd.DataFrame({"type": linetypes}), how="cross")
 
-    A_input = common.altair_range_input(
-        name="A",
-        field="A",
-        min=1,
-        max=40,
-        init=24,
-    )
-    alpha_input = common.altair_range_input(
-        name="α",
-        field="alpha",
-        min=0.01,
-        max=0.99,
-        step=0.01,
-        init=0.6,
-    )
-    m_input = common.altair_range_input(
-        name="m",
-        field="m",
-        min=0,
-        max=100,
-        init=90,
+    inputs = SimpleNamespace(
+        A=common.altair_range_input(
+            name="A",
+            field="A",
+            min=1,
+            max=40,
+            init=24,
+        ),
+        alpha=common.altair_range_input(
+            name="α",
+            field="alpha",
+            min=0.01,
+            max=0.99,
+            step=0.01,
+            init=0.6,
+        ),
+        m=common.altair_range_input(
+            name="m",
+            field="m",
+            min=0,
+            max=100,
+            init=90,
+        ),
     )
 
     def f(h):
         h = alt.expr.max(0, h)
-        y = A_input.A * h ** alpha_input.alpha
-        return alt.expr.min(m_input.m, y)
+        y = inputs.A.A * h ** inputs.alpha.alpha
+        return alt.expr.min(inputs.m.m, y)
 
     prod_func = f(alt.datum.hours)
     avg_prod = prod_func / alt.expr.max(1, alt.datum.hours)
@@ -46,9 +50,9 @@ def plot():
     lines = (
         alt.Chart(data)
         .mark_line(clip=True)
-        .add_selection(A_input)
-        .add_selection(alpha_input)
-        .add_selection(m_input)
+        .add_selection(inputs.A)
+        .add_selection(inputs.alpha)
+        .add_selection(inputs.m)
         .transform_calculate(
             y=(alt.datum.type == "Final grade") * prod_func
             + (alt.datum.type == "Average product") * avg_prod
