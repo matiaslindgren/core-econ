@@ -7,3 +7,4 @@ tech_and_cost
 malthus_escape
 production_function
 working_hours
+wealth_distribution
