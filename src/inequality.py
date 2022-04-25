@@ -111,7 +111,11 @@ def plot_income(data):
             height=scale * height,
         )
     )
-    chart = deciles_heatmap | inequality_heatmap
+    chart = alt.hconcat(
+        deciles_heatmap,
+        inequality_heatmap,
+        usermeta={"inputsOnTop": True},
+    )
     chart = (
         chart.resolve_scale(color="independent")
         .add_selection(select_year)
