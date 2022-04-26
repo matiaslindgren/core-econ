@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 import random
 
 import altair as alt
@@ -7,57 +8,79 @@ import pandas as pd
 import common
 
 
-def draw_pareto(shape, n):
-    v = np.random.pareto(shape, n)
-    v = (100 / v.sum()) * v
-    v = v.round(1)
-    return v
+np_rng = np.random.default_rng(3)
 
 
-def plot(persons=20):
-    init_income = draw_pareto(3, persons)
-    input_fieldnames = [(f"person_{p}", init_income[p - 1]) for p in range(1, persons + 1)]
-    input_fieldnames.sort(key=lambda x: x[1])
-    inputs = {
-        field: common.altair_range_input(
-            name=field,
-            field=field,
+def draw_from_pareto(shape, n):
+    v = np_rng.pareto(shape, n)
+    v /= v.sum()
+    v = np.minimum(100, 100 * shape * v)
+    return v.round(1)
+
+
+def plot(population_size=20):
+    person_ids = [f"person_{p+1}" for p in range(population_size)]
+    incomes = draw_from_pareto(3, population_size)
+    inputs = [SimpleNamespace(key=key, income=income) for key, income in zip(person_ids, incomes)]
+    inputs.sort(key=lambda x: x.income)
+    for input in inputs:
+        input.alt_input = common.altair_range_input(
+            name=input.key,
+            field=input.key,
             min=0,
             max=100,
             step=0.1,
-            init=init,
+            init=input.income,
         )
-        for field, init in input_fieldnames
-    }
-    data = pd.DataFrame([{k: init for k, init in [("person_0", 0), *input_fieldnames]}])
 
+    # Base data, one income value for each person
+    data = pd.DataFrame([{input.key: input.income for input in inputs}])
     base = alt.Chart(data)
-    for input in inputs.values():
-        base = base.add_selection(input)
+    for input in inputs:
+        base = base.add_selection(input.alt_input)
+    # Insert range input values in wide form
+    input_vars = {input.key: 1.0 * input.alt_input[input.key] for input in inputs}
+    base = base.transform_calculate(**input_vars)
+    # Fold into long form
+    base = base.transform_fold(list(input_vars), as_=["group", "income"])
 
     cumulative_income_line = (
-        base.transform_calculate(
-            **{field: 1.0 * input[field] for field, input in inputs.items()},
-        )
-        .transform_fold(
-            [k for k, _ in input_fieldnames],
-            as_=["group", "income"],
-        )
+        base
+        # Cumulative income
         .transform_window(
             sort=[{"field": "income"}],
             cumulative_income="sum(income)",
-            order="row_number(income)",
+            row_number="row_number(income)",
             ignorePeers=True,
         )
-        .transform_joinaggregate(total_income="sum(income)")
+        .transform_joinaggregate(
+            total_income="sum(income)",
+        )
         .transform_calculate(
             income_share=alt.datum.cumulative_income / alt.datum.total_income,
-            order_p=alt.datum.order / 20,
+            population_share=(alt.datum.row_number - 1) / (population_size - 1),
         )
-        .mark_line()
+        # Gini coefficient
+        .transform_calculate(
+            mean_abs_diff_self=sum(
+                alt.expr.abs(alt.datum.income - alt.datum[other_income])
+                for other_income in input_vars
+            )
+            / population_size,
+        )
+        .transform_joinaggregate(
+            mean_abs_diff="mean(mean_abs_diff_self)",
+            mean_income="mean(income)",
+        )
+        .transform_calculate(
+            gini=alt.datum.mean_abs_diff / (2 * alt.datum.mean_income),
+        )
+        # .mark_point(size=50, tooltip={"content": "data"})
+        # .encode(x="group:O", y="income:Q")
+        .mark_area(line=True)
         .encode(
             x=alt.X(
-                "order_p:Q",
+                "population_share:Q",
                 title="Cumulative share of population, ordered by income",
                 axis=alt.Axis(format="%"),
             ),
@@ -65,8 +88,12 @@ def plot(persons=20):
                 "income_share:Q",
                 title="Cumulative share of income",
                 axis=alt.Axis(format="%"),
-                scale=alt.Scale(domainMin=0, domainMax=1),
             ),
+            color=alt.Color(
+                "gini:Q",
+                scale=alt.Scale(scheme="reds", domainMin=0, domainMax=0.5),
+            ),
+            tooltip=[alt.Tooltip("gini:Q", title="Gini")],
         )
     )
 
@@ -88,7 +115,7 @@ def plot(persons=20):
 
 def main():
     chart, data = plot()
-    print(common.render(__file__, chart=chart))
+    print(common.render(__file__, chart=chart, include_katex=True))
     return data
 
 
