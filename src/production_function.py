@@ -113,7 +113,7 @@ def plot():
 
 def main():
     chart, data = plot()
-    print(common.render(__file__, chart=chart))
+    print(common.render(__file__, chart=chart, include_katex=True))
     return data
 
 

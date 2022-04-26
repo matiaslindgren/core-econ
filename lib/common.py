@@ -61,6 +61,7 @@ def render(module, chart=None, **extra_context):
         "metadata": module_metadata(module),
         "updated_at": today(),
         "has_chart": False,
+        "include_katex": False,
     }
     if chart:
         context["vega_spec"], context["vega_opt"] = altair_chart_to_json(chart)

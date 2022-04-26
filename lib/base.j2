@@ -4,7 +4,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{{ metadata.desc }}">
+    {% if "short_desc" in metadata %}
+    <meta name="description" content="{{ metadata.short_desc }}">
+    {% endif %}
     <title>{{ metadata.title }}</title>
 
     {% set deps = [
@@ -17,6 +19,19 @@
       <script src="https://cdn.jsdelivr.net/npm/{{ dep }}" crossorigin="anonymous">
       </script>
     {% endfor %}
+
+    {% if include_katex %}
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css"
+          integrity="sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB"
+          crossorigin="anonymous">
+    <script defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+            integrity="sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p"
+            crossorigin="anonymous">
+    </script>
+    {% endif %}
+
 
     <style>
     {% include "style.css" %}
@@ -75,6 +90,12 @@
 
     {% block body %}
     {% endblock %}
+
+    {% if include_katex %}
+      <script type="text/javascript">
+      {% include 'render_katex.js' %}
+      </script>
+    {% endif %}
 
   </body>
 

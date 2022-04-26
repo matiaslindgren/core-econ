@@ -11,6 +11,10 @@ a:hover {
   text-decoration: underline;
 }
 
+.katex-display > .katex {
+  text-align: left;
+}
+
 #vega-container {
   max-width: 70em;
   width: 100%;
