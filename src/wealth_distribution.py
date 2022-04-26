@@ -19,34 +19,34 @@ def draw_from_pareto(shape, n):
 
 
 def plot(population_size=20):
-    person_ids = [f"person_{p+1}" for p in range(population_size)]
-    incomes = draw_from_pareto(3, population_size)
-    inputs = [SimpleNamespace(key=key, income=income) for key, income in zip(person_ids, incomes)]
-    inputs.sort(key=lambda x: x.income)
-    for input in inputs:
-        input.alt_input = common.altair_range_input(
-            name=input.key,
-            field=input.key,
+    # Create range input for each person and draw initial income from the Pareto distribution
+    inputs = [
+        SimpleNamespace(key=f"person_{p}", income=income)
+        for p, income in enumerate(draw_from_pareto(3, population_size), start=1)
+    ]
+    for inp in sorted(inputs, key=lambda inp: inp.income):
+        inp.alt_input = common.altair_range_input(
+            name=inp.key,
+            field=inp.key,
             min=0,
             max=100,
             step=0.1,
-            init=input.income,
+            init=inp.income,
         )
 
-    # Base data, one income value for each person
-    data = pd.DataFrame([{input.key: input.income for input in inputs}])
-    base = alt.Chart(data)
-    for input in inputs:
-        base = base.add_selection(input.alt_input)
-    # Insert range input values in wide form
-    input_vars = {input.key: 1.0 * input.alt_input[input.key] for input in inputs}
+    # Base data, one income value for each person from each range input
+    base = alt.Chart(pd.DataFrame([{inp.key: inp.income for inp in inputs}]))
+    for inp in inputs:
+        base = base.add_selection(inp.alt_input)
+    # Insert range input values as data fields in wide form
+    input_vars = {inp.key: 1.0 * inp.alt_input[inp.key] for inp in inputs}
     base = base.transform_calculate(**input_vars)
     # Fold into long form
     base = base.transform_fold(list(input_vars), as_=["group", "income"])
 
     cumulative_income_line = (
         base
-        # Cumulative income
+        # Compute cumulative income and population shares
         .transform_window(
             sort=[{"field": "income"}],
             cumulative_income="sum(income)",
@@ -60,7 +60,7 @@ def plot(population_size=20):
             income_share=alt.datum.cumulative_income / alt.datum.total_income,
             population_share=(alt.datum.row_number - 1) / (population_size - 1),
         )
-        # Gini coefficient
+        # Compute Gini coefficient
         .transform_calculate(
             mean_abs_diff_self=sum(
                 alt.expr.abs(alt.datum.income - alt.datum[other_income])
@@ -83,11 +83,13 @@ def plot(population_size=20):
                 "population_share:Q",
                 title="Cumulative share of population, ordered by income",
                 axis=alt.Axis(format="%"),
+                scale=alt.Scale(domainMin=0, domainMax=1),
             ),
             y=alt.Y(
                 "income_share:Q",
                 title="Cumulative share of income",
                 axis=alt.Axis(format="%"),
+                scale=alt.Scale(domainMin=0, domainMax=1),
             ),
             color=alt.Color(
                 "gini:Q",
@@ -110,14 +112,12 @@ def plot(population_size=20):
     chart = chart.properties(width=600, height=600, title="Distribution of wealth ownership")
     chart = common.configure_altair_fonts(chart)
 
-    return chart, data
+    return chart
 
 
 def main():
-    chart, data = plot()
-    print(common.render(__file__, chart=chart, include_katex=True))
-    return data
+    print(common.render(__file__, chart=plot(), include_katex=True))
 
 
 if __name__ == "__main__":
-    data = main()
+    main()
