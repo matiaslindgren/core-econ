@@ -2,10 +2,9 @@ title: >
   Measuring economic inequality
 desc: |
   <p class='equations'>
-  The Gini coefficient <span class="katex-inline">G</span> is computed according to the definition in <a href='https://en.wikipedia.org/wiki/Gini_coefficient#Definition'>Wikipedia</a>, i.e.
+  The Gini coefficient <span class="kx">G</span> is computed according to the definition in <a href='https://en.wikipedia.org/wiki/Gini_coefficient#Definition'>Wikipedia</a>, i.e.
   </br>
-  <span class="katex-display">G := \frac{\sum_{i=1}^{n} \sum_{j=1}^n |x_i-x_j|}{2 n^2 \overline{x}},</span>
-  where <span class="katex-inline">x_i</span> is the income of person <span class="katex-inline">i</span>, out of a total of <span class="katex-inline">n</span> persons.
+  <span class="kx">\displaystyle G := \frac{\displaystyle \sum_{i=1}^{n} \sum_{j=1}^n |x_i-x_j|}{\displaystyle 2 n^2 \overline{x}},</span> where <span class="kx">x_i</span> is the income of person <span class="kx">i</span>, out of a total of <span class="kx">n</span> persons.
   </p>
 chapter: >
   5.12 Measuring economic inequality
