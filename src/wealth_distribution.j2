@@ -2,33 +2,34 @@
 
 {% block head %}
 <style>
-:root {
-  --emoji-col-width: 5em;
-  --input-col-width: 14em;
+#vega-container .gini-container {
+    font-size: 1.5em;
+    margin: 1em 0;
 }
-
 form.vega-bindings .vega-bind label.inputs-header {
-    margin-top: 3rem;
-    margin-bottom: 0.5rem;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
 }
 form.vega-bindings .vega-bind label.inputs-header span {
     font-weight: bold;
 }
 form.vega-bindings .vega-bind label {
     display: grid;
-    grid-template-columns: var(--emoji-col-width) var(--input-col-width) 3em;
+    grid-template-columns: 5em 16em 2em;
 }
 form.vega-bindings .vega-bind button.randomize-button {
-    width: var(--input-col-width);
-    margin-top: 0.5rem;
-    margin-left: var(--emoji-col-width);
+    width: 28em;
+    margin-top: 0.5em;
 }
 form.vega-bindings .vega-bind label:not(.inputs-header) span:not(.vega-bind-name) {
     justify-content: right;
     display: grid;
 }
 form.vega-bindings .vega-bind label:not(.inputs-header) span.vega-bind-name {
-    font-size: 1.5rem;
+    font-size: 1.5em;
+}
+form.vega-bindings .vega-bind label span {
+    margin-left: 0;
 }
 </style>
 <script>

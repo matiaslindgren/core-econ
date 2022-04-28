@@ -14,7 +14,7 @@ function create(tag, cls, text) {
 }
 
 function randomizeEmojis() {
-  const emojis = [
+  const people = [
     "&#x1F468;",
     "&#x1F469;",
     "&#x1F471;",
@@ -27,18 +27,8 @@ function randomizeEmojis() {
   const skinColors = ["&#x1F3FB;", "&#x1F3FC;", "&#x1F3FD;", "&#x1F3FE;", "&#x1F3FF;"];
   const emojiSpans = document.querySelectorAll("form.vega-bindings .vega-bind span.emoji");
   for (const span of emojiSpans) {
-    span.innerHTML = chooseRandom(emojis) + chooseRandom(skinColors);
+    span.innerHTML = chooseRandom(people) + chooseRandom(skinColors);
   }
-}
-
-// https://stackoverflow.com/a/36481059/5951112
-// Standard Normal variate using Box-Muller transform.
-function randn_bm() {
-  let u = 0;
-  let v = 0;
-  while (u === 0) u = Math.random(); //Converting [0,1) to (0,1)
-  while (v === 0) v = Math.random();
-  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 }
 
 function inputs() {
@@ -47,7 +37,7 @@ function inputs() {
 
 function randomizeIncomes() {
   for (const input of inputs()) {
-    input.value = Math.min(100, Math.max(1, 20 * (2 + randn_bm())));
+    input.value = Math.min(100, Math.max(0, 100 * Math.random()));
     input.dispatchEvent(new Event("change"));
   }
 }
@@ -57,19 +47,50 @@ function sortInputsByIncome() {
   const inputValue = (row) => parseFloat(row.querySelector("label input[type='range']").value);
   rows = rows.sort((a, b) => inputValue(b) - inputValue(a));
   for (const row of rows) {
-    row.parentElement.appendChild(row);
+    row.parentElement.insertBefore(row, row.parentElement.lastChild);
   }
+}
+
+function updateGini() {
+  vegaView.runAsync().then(() => {
+    const gini = vegaView.data("layer_0_layer_0_pathgroup")[0].datum.gini;
+    if (!Number.isFinite(gini)) {
+      return;
+    }
+    const fmt = new Intl.NumberFormat("en-US", {
+      style: "percent",
+      maximumFractionDigits: 1,
+    });
+    document.getElementById("gini-label").innerText = fmt.format(gini);
+  });
 }
 
 function main() {
   const inputForm = document.querySelector("form.vega-bindings");
 
-  const topLabel = create("label", "inputs-header");
-  topLabel.appendChild(create("span", "vega-bind-name", "Person"));
-  topLabel.appendChild(create("span", null, "Income"));
   const topRow = create("div", "vega-bind");
-  topRow.appendChild(topLabel);
+  topRow.innerHTML = `
+    <label class='inputs-header'>
+      <span class='vega-bind-name'>Person</span>
+      <span>Income</span>
+    </label>`;
   inputForm.insertBefore(topRow, inputForm.firstChild);
+
+  const vegaContainer = document.getElementById("vega-container");
+  const giniContainer = create("div", "gini-container");
+  giniContainer.innerHTML = "<span>Gini: </span><span id='gini-label'></span>";
+  vegaContainer.insertBefore(giniContainer, vegaContainer.lastChild);
+
+  for (const input of inputs()) {
+    const oninput = input.oninput;
+    input.oninput = (e) => {
+      updateGini();
+      e.preventDefault();
+      if (oninput) {
+        oninput(e);
+      }
+    };
+  }
 
   const inputNames = document.querySelectorAll("form.vega-bindings .vega-bind span.vega-bind-name");
   for (const name of inputNames) {
@@ -77,18 +98,21 @@ function main() {
       name.classList.add("emoji");
     }
   }
-  randomizeEmojis();
 
   const randomizeButton = create("button", "randomize-button", "Randomize");
   randomizeButton.onclick = (e) => {
     randomizeEmojis();
     randomizeIncomes();
     sortInputsByIncome();
+    updateGini();
     e.preventDefault();
   };
   const bottomRow = create("div", "vega-bind");
   bottomRow.appendChild(randomizeButton);
   inputForm.appendChild(bottomRow);
+
+  randomizeEmojis();
+  updateGini();
 }
 
 window.addEventListener("DOMContentLoaded", main);

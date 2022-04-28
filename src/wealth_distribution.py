@@ -15,10 +15,10 @@ def draw_from_pareto(shape, n):
     v = np_rng.pareto(shape, n)
     v /= v.sum()
     v = np.minimum(100, 100 * shape * v)
-    return v.round(1)
+    return v.round(0)
 
 
-def plot(population_size=20):
+def plot(population_size=10):
     # Create range input for each person and draw initial income from the Pareto distribution
     inputs = [
         SimpleNamespace(key=f"person_{p}", income=income)
@@ -30,7 +30,7 @@ def plot(population_size=20):
             field=inp.key,
             min=0,
             max=100,
-            step=0.1,
+            step=1,
             init=inp.income,
         )
 
@@ -80,6 +80,11 @@ def plot(population_size=20):
         )
         .transform_calculate(
             gini=alt.datum.total_mean_abs_diff / (2 * alt.datum.mean_income * population_size),
+        )
+        # Replace NaNs
+        .transform_calculate(
+            income_share="isNumber(datum.income_share) ? datum.income_share : datum.population_share",
+            gini="datum.gini || 0",
         )
         .mark_area(line=True)
         .encode(
