@@ -33,8 +33,8 @@ def module_metadata(file):
         ]
     )
     path = pathlib.Path("metadata").joinpath(module_name(file)).with_suffix(".yaml")
-    if path.exists():
-        meta.update(yaml.safe_load(path.read_text()))
+    if path.exists() and (content := path.read_text()):
+        meta.update(yaml.safe_load(content))
     return meta
 
 

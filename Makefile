@@ -21,7 +21,7 @@ DST_FILES_NOJS := $(addprefix $(DST)/,$(addsuffix .html,$(MODULES_NOJS)))
 DST_FILES      := $(DST_FILES_NOJS) $(DST_FILES_JS)
 
 
-.PHONY: all clean dirs install run
+.PHONY: all clean dirs install run new_module
 
 
 all: $(DST)/$(INDEX).html $(DST_FILES)
@@ -48,3 +48,10 @@ $(DST_FILES_JS): $(DST)/%.html: $(addprefix $(SRC)/,%.py %.j2 %.js) $(META)/%.ya
 
 run: $(DST_FILES) | install
 	$(PYTHON) -m http.server --directory $(DST)
+
+new_module:
+	@if [[ -z "$(ARG)" ]]; then echo 'usage: make ARG=name new_module'; exit 2; fi
+	touch src/$(ARG).{js,py}
+	echo "{% extends 'base.j2' %}" > src/$(ARG).j2
+	echo 'title: $(ARG)' > metadata/$(ARG).yaml
+	echo $(ARG) >> modules.txt
