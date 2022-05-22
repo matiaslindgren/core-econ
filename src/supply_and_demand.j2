@@ -1,0 +1,29 @@
+{% extends 'base.j2' %}
+
+{% block head %}
+<style>
+form.vega-bindings .vega-bind label {
+  display: grid;
+  grid-template-columns: 8em 16em 6em;
+}
+#vega-container {
+  max-width: initial;
+}
+
+</style>
+{% endblock %}
+
+{% block body %}
+<script>
+window.addEventListener("DOMContentLoaded", _ => {
+  {% for firm, equation in firm_costs.items() %}
+    {% set containerId = "{}-cost-function".format(firm) %}
+    {
+      const container = document.getElementById("{{ containerId }}");
+      katex.render("{{ equation }}", container);
+    }
+
+  {% endfor %}
+});
+</script>
+{% endblock %}
