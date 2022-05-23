@@ -1,9 +1,9 @@
 {% extends 'base.j2' %}
 
 {% block body_before_chart %}
-<p class='equations'>
+<div class='equations'>
 Let <span class="kx">f(h) = \min(m, A h ^ \alpha)</span> be a production function for the final grade, where <span class='kx'>h</span> is the amount of study hours and <span class='kx'>m</span> the maximum grade regardless of study effort.
 <span class='kx'>A</span> and <span class='kx'>\alpha</span> are constants.
-</p>
+</div>
 <script>{% include 'production_function.js' %}</script>
 {% endblock %}

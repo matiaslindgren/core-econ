@@ -1,8 +1,7 @@
 title: >
   Growth since the 17th century
-desc: >
-  History's hockey stick: Real gross domestic product per capita (2011 US$).
-  Visualizing growth across the world since the 17th century.
+desc:
+  - Visualizing growth across the world since the 17th century by real gross domestic product per capita (2011 US$).
 src: >
   Maddison Project Database, version 2018.
   Bolt, Jutta, Robert Inklaar, Herman de Jong and Jan Luiten van Zanden (2018),

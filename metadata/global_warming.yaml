@@ -1,10 +1,11 @@
 title: >
   Global warming
 
-desc: >
-  Northern hemisphere temperatures over the long run, deviation from 1951-1990 mean temperature (°C), 1000 to 2017.
-
-  Units of measurement: Deviation from 1961-1990 mean temperature in degree celsius for years before 1880. Deviation from 1951-1980 mean temperature in degree celsius for years after 1880.
+desc:
+  - >
+    Northern hemisphere temperatures over the long run, deviation from 1951-1990 mean temperature (°C), 1000 to 2017.
+  - >
+    Units of measurement: Deviation from 1961-1990 mean temperature in degree celsius for years before 1880. Deviation from 1951-1980 mean temperature in degree celsius for years after 1880.
 
 src: >
   GISTEMP Team, 2018: GISS Surface Temperature Analysis (<a href="https://data.giss.nasa.gov/gistemp">GISTEMP</a>).

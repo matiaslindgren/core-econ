@@ -89,3 +89,8 @@ table.tooltip tbody tr td {
   border: 1px solid #d9d9d9;
   color: black;
 }
+
+dd.module-description ul {
+  padding-left: 0px;
+  list-style-position: inside;
+}

@@ -1,8 +1,8 @@
 title: >
   Working hours and wages
-desc: >
-  Comparing development of average annual wages to average annual hours worked per worker.
-  Wages are reported in 2020 USD PPP.
+desc:
+  - Comparing development of average annual wages to average annual hours worked per worker.
+  - Wages are reported in 2020 USD PPP.
 src: >
   OECD.Stat: "Average annual hours actually worked per worker" (code <code>ANHRS</code>, total employment only) and "Average annual wages" (code <code>AV_AN_WAGE</code>).
   Average hourly wages are computed by dividing <code>AV_AN_WAGE</code> with <code>ANHRS</code>.

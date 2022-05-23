@@ -50,7 +50,17 @@
       <dd>{{ updated_at }}</dd>
       {% if metadata.desc %}
         <dt>Description</dt>
-        <dd>{{ metadata.desc }}</dd>
+        <dd class="module-description">
+            {% if metadata.desc | length == 1 %}
+              {{ metadata.desc[0] }}
+            {% else %}
+              <ul>
+              {% for desc in metadata.desc %}
+                <li>{{ desc }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+        </dd>
       {% endif %}
       {% if metadata.src %}
         <dt>Data source</dt>
