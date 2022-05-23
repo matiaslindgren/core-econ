@@ -32,9 +32,9 @@ def plot():
     firm_types = ["Smith", "Workshop", "Factory"]
     P = np.polynomial.Polynomial
     firm_costs = SimpleNamespace(
-        Smith=P([2, 1, 0.5]),
-        Workshop=P([30, 0.5, 0.01]),
-        Factory=P([150, 0.001, 0.001]),
+        Smith=P([5, 1, 0.5]),
+        Workshop=P([50, 0.5, 0.025]),
+        Factory=P([250, 0.001, 0.001]),
     )
 
     def get_cost(firm):
@@ -115,13 +115,16 @@ def plot():
         return getattr(getattr(inputs, firm), f"{firm}_count")
 
     def market_cost():
-        counts = [get_input(f) for f in firm_types]
-        costs = [get_cost(f) for f in firm_types]
-        s0 = sum(count / cost.coef[0] for count, cost in zip(counts, costs))
-        s1 = sum(count / cost.coef[1] for count, cost in zip(counts, costs))
+        # Compute integral of market supply function
+        x0 = x1 = x2 = 0
+        for f in firm_types:
+            count = get_input(f)
+            cost = get_cost(f)
+            x0 += count * cost.coef[0]
+            x1 += count / cost.coef[1]
+            x2 += count / cost.coef[2]
         q = alt.datum.total_quantity
-        min_cost = min(c.coef[0] for c in costs)
-        return min_cost + (s0 / s1) * q + (2 / s1) * alt.expr.pow(q, 2)
+        return x0 + (x1 / x2) * q + (1 / x2) * alt.expr.pow(q, 2)
 
     data_total = data.assign(total_quantity=data.quantity)
     market_supply_line = (
@@ -176,9 +179,7 @@ def plot():
 
     total_output = sum(map(firm_output, firm_types))
     market_outputs = [(alt.datum.firm == f) * firm_output(f) for f in firm_types]
-    market_shares = [
-        output / alt.expr.max(1, total_output) for f, output in zip(firm_types, market_outputs)
-    ]
+    market_shares = [output / alt.expr.max(1, total_output) for output in market_outputs]
 
     df_prices = pd.DataFrame({"price": np.linspace(0, 500)})
     df_firm_types = pd.DataFrame({"firm": firm_types})
