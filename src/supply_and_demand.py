@@ -126,7 +126,7 @@ def plot():
         q = alt.datum.total_quantity
         return x0 + (x1 / x2) * q + (1 / x2) * alt.expr.pow(q, 2)
 
-    data_total = data.assign(total_quantity=data.quantity)
+    data_total = data.assign(total_quantity=100 * data.quantity)
     market_supply_line = (
         alt.Chart(data_total)
         .mark_line(clip=True)
