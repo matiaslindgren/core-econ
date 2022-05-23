@@ -1,4 +1,6 @@
-title: Altair, Vega-Lite, and The Economy
+title: Economics visualizations
 desc:
   - >
-    Using <a href='https://altair-viz.github.io/index.html'>Altair</a>, <a href='https://vega.github.io/vega-lite/'>Vega-Lite</a>, and <a href='https://core-econ.org/the-economy/'>The Core Team's The Economy</a> to visualize economics.
+    Using <a href='https://altair-viz.github.io/index.html'>Altair</a>, <a href='https://vega.github.io/vega-lite/'>Vega-Lite</a>, and <a href='https://core-econ.org/the-economy/'>The Core Team's The Economy</a> to learn economics by making visualizations.
+  - I don't know anything about economics so please assume all math is incorrect (the code should be OK though).
+  - Visualizations might work poorly on mobile devices since most interactions assume a mouse is used.

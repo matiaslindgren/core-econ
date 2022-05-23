@@ -2,6 +2,7 @@ title: >
   Growth since the 17th century
 desc:
   - Visualizing growth across the world since the 17th century by real gross domestic product per capita (2011 US$).
+  - The visualization is very slow when all countries are visible. Select a subset by clicking on countries in the legend under "Countries". Hold shift to select multiple.
 src: >
   Maddison Project Database, version 2018.
   Bolt, Jutta, Robert Inklaar, Herman de Jong and Jan Luiten van Zanden (2018),

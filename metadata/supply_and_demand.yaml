@@ -2,7 +2,7 @@ title: Supply and demand
 desc:
   - Three different firms producing goods at three different efficiency levels.
   - All firms are price-takers and must therefore choose the number of units produced such that the marginal cost is equal to the market price of the produced unit.
-  - It is assumed there are no taxes and the demand is constant.
+  - It is assumed there are no taxes.
   - >
     <span class="equations">Each firm has a cost function <span class="kx">\text{C}(Q)</span>, where <span class="kx">Q</span> denotes number of produced units.</span>
   - >
@@ -11,17 +11,17 @@ desc:
     <dl style="padding-left: 1em">
       <dt>Smith</dt>
       <dd>
-        One skilled smith producing hand-crafted goods. Very low startup cost, does not scale well.
+        One skilled smith producing hand-crafted goods. Very low startup cost, but does not scale well.
         <div>Cost function: <span id="Smith-cost-function"></span>.</div>
       </dd>
       <dt>Workshop</dt>
       <dd>
-        Semi-automated production lines. Higher startup cost than a smith but scales better.
+        Workshop with semi-automated production lines. Production scales up better than a smith, but has a higher startup cost.
         <div>Cost function: <span id="Workshop-cost-function"></span>.</div>
       </dd>
       <dt>Factory</dt>
       <dd>
-        Fully automated, modern factory. Very high startup cost, scales very well.
+        Fully automated, modern factory. Scales very well, but has a very high startup cost.
         <div>Cost function: <span id="Factory-cost-function"></span>.</div>
       </dd>
     </dl>
