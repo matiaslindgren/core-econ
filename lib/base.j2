@@ -87,12 +87,12 @@
     {% block body_before_chart %}
     {% endblock %}
 
-    {% if has_chart %}
+    {% if chart %}
       <div id="vega-container"></div>
       <script type="text/javascript">
         {% include 'chart.js' %}
-        const spec = {{ vega_spec }};
-        const options = {{ vega_opt }};
+        const spec = {{ chart.spec }};
+        const options = {{ chart.options }};
         buildChart(spec, options);
       </script>
       <div id='custom-tooltip-element'></div>

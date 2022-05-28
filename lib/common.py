@@ -58,12 +58,11 @@ def render(module, chart=None, **extra_context):
         "module_name": module_name(module),
         "metadata": module_metadata(module),
         "updated_at": today(),
-        "has_chart": False,
+        "chart": None,
         "include_katex": False,
     }
     if chart:
-        context["vega_spec"], context["vega_opt"] = altair_chart_to_json(chart)
-        context["has_chart"] = True
+        context["chart"] = altair_chart_to_json(chart)
     return template.render(**(context | extra_context))
 
 
@@ -84,10 +83,9 @@ def read_data(filename, **kwargs):
 eprint = functools.partial(print, file=sys.stderr)
 
 
-def altair_chart_to_json(chart, **options):
-    spec = chart.to_json()
-    default_options = {"renderer": "canvas", "actions": False}
-    return spec, json.dumps(default_options | options)
+def altair_chart_to_json(chart, renderer="canvas", actions=False, **options):
+    options = {"renderer": renderer, "actions": actions} | options
+    return {"spec": chart.to_json(), "options": json.dumps(options)}
 
 
 def configure_altair_fonts(chart, **config):
