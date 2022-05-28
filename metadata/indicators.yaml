@@ -1,0 +1,29 @@
+title: Economic indicators
+desc:
+  - Comparing Finland, Sweden, and Norway on five annual economic indicators by Organisation for Economic Co-operation and Development (OECD).
+src: OECD Data
+urls:
+  - url: >
+      https://data.oecd.org/gdp/real-gdp-forecast.htm
+    name: >
+      OECD (2022), Real GDP forecast (indicator). doi: 10.1787/1f84150b-en (Accessed on 28 May 2022)
+  - url: >
+      https://data.oecd.org/hha/household-disposable-income.htm
+    name: >
+      OECD (2022), Household disposable income (indicator). doi: 10.1787/dd50eddd-en (Accessed on 28 May 2022)
+  - url: >
+      https://data.oecd.org/unemp/unemployment-rate.htm
+    name: >
+      OECD (2022), Unemployment rate (indicator). doi: 10.1787/52570002-en (Accessed on 28 May 2022)
+  - url: >
+      https://data.oecd.org/price/inflation-cpi.htm
+    name: >
+      OECD (2022), Inflation (CPI) (indicator). doi: 10.1787/eee82e6e-en (Accessed on 28 May 2022)
+  - url: >
+      https://data.oecd.org/interest/long-term-interest-rates.htm
+    name: >
+      OECD (2022), Long-term interest rates (indicator). doi: 10.1787/662d712c-en (Accessed on 28 May 2022)
+  - url: >
+      https://data.oecd.org/interest/short-term-interest-rates.htm
+    name: >
+      OECD (2022), Short-term interest rates (indicator). doi: 10.1787/2cc37d77-en (Accessed on 28 May 2022)

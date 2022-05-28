@@ -155,3 +155,14 @@ def reindex_multiple_columns(data, *index_columns, **reindex_kw):
     index_values = (data[col].dropna().unique() for col in index_columns)
     index = pd.MultiIndex.from_product(index_values, names=index_columns)
     return data.set_index(index.names).reindex(index, **reindex_kw)
+
+
+def tooltip_from_encoding(e, title):
+    t = alt.Tooltip(
+        field=e.field,
+        type=e.type,
+        title=e.axis.title or title,
+    )
+    if hasattr(e, "timeUnit"):
+        t.timeUnit = e.timeUnit
+    return t

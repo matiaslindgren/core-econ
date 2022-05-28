@@ -9,3 +9,4 @@ production_function
 working_hours
 wealth_distribution
 supply_and_demand
+indicators
