@@ -123,10 +123,7 @@ def plot(data):
 
 
 def main():
-    data = common.read_data(
-        fn="read_csv",
-        filename="the-two-germanies-planning-and-capitalism.csv",
-    )
+    data = common.read_data("the-two-germanies-planning-and-capitalism.csv")
     chart, data = plot(data)
     print(common.render(__file__, chart=chart))
     return data

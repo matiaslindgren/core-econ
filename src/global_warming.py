@@ -10,9 +10,7 @@ import common
 
 
 def plot(data):
-    data = data.rename(
-        columns={"Deviation from 1951-1990 average temperature": "Deviation"}
-    )
+    data = data.rename(columns={"Deviation from 1951-1990 average temperature": "Deviation"})
     data = data[["Year", "Deviation"]]
 
     nearest_point_selector = common.altair_selector("Year")
@@ -94,8 +92,7 @@ def plot(data):
 
 def main():
     data = common.read_data(
-        fn="read_csv",
-        filename="northern-hemisphere-temperatures-over-the-long-run-deviation-from-1951-1990-mean-temperature-c.csv",
+        "northern-hemisphere-temperatures-over-the-long-run-deviation-from-1951-1990-mean-temperature-c.csv",
     )
     chart, data = plot(data)
     print(common.render(__file__, chart=chart))

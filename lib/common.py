@@ -13,8 +13,6 @@ import pandas as pd
 import requests
 import yaml
 
-memory = joblib.Memory(pathlib.Path(".").joinpath("cache"), verbose=0)
-
 
 def module_name(file):
     return pathlib.Path(file).stem
@@ -69,14 +67,18 @@ def render(module, chart=None, **extra_context):
     return template.render(**(context | extra_context))
 
 
+memory = joblib.Memory(pathlib.Path(".").joinpath("cache"), verbose=1)
+
+
 @memory.cache
-def read_data(fn, url=None, filename=None, **kwargs):
-    if url:
-        eprint(f"downloading {url}")
-        return getattr(pd, fn)(url, **kwargs)
-    if filename:
-        csv_path = pathlib.Path(".").parent.joinpath("data", filename)
-        return getattr(pd, fn)(csv_path, **kwargs)
+def download_data(url, **kwargs):
+    eprint(f"downloading url {url}")
+    return pd.read_csv(url, **kwargs)
+
+
+def read_data(filename, **kwargs):
+    csv_path = pathlib.Path(".").parent.joinpath("data", filename)
+    return pd.read_csv(csv_path, **kwargs)
 
 
 eprint = functools.partial(print, file=sys.stderr)

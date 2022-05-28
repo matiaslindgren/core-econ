@@ -132,13 +132,11 @@ def plot(hours, wages, begin_year=1992):
 
 def main():
     hours = common.read_data(
-        fn="read_csv",
-        filename="ANHRS_15042022120521493.csv",
+        "ANHRS_15042022120521493.csv",
         usecols=["Country", "Time", "Value", "Unit", "Employment status"],
     )
     wages = common.read_data(
-        fn="read_csv",
-        filename="AV_AN_WAGE_15042022122047196.csv",
+        "AV_AN_WAGE_15042022122047196.csv",
         usecols=["Country", "Time", "Value", "Unit", "Reference Period"],
     )
     chart, data = plot(hours, wages)

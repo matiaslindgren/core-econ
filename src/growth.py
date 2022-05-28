@@ -97,8 +97,7 @@ def plot_growth(data):
 
 def main():
     data = common.read_data(
-        fn="read_csv",
-        filename="historys-hockey-stick-gross-domestic-product-per-capita-using-the-ratio-scale-1990.csv",
+        "historys-hockey-stick-gross-domestic-product-per-capita-using-the-ratio-scale-1990.csv",
     )
     chart, data = plot_growth(data)
     print(common.render(__file__, chart=chart))

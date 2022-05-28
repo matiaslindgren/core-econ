@@ -90,10 +90,7 @@ def plot(data):
 
 
 def main():
-    data = common.read_data(
-        fn="read_csv",
-        filename="tech_and_cost.csv",
-    )
+    data = common.read_data("tech_and_cost.csv")
     chart, data = plot(data)
     print(common.render(__file__, chart=chart))
     return data

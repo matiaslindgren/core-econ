@@ -27,7 +27,7 @@ DST_FILES      := $(DST_FILES_NOJS) $(DST_FILES_JS)
 all: $(DST)/$(INDEX).html $(DST_FILES)
 
 clean:
-	rm -rfv $(DST)
+	rm -rfv $(DST) cache
 
 dirs: $(DST)
 

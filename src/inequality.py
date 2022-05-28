@@ -128,11 +128,7 @@ def plot_income(data):
 
 
 def main():
-    data = common.read_data(
-        fn="read_csv",
-        url=DATA_URL,
-        header=2,
-    )
+    data = common.download_data(DATA_URL, header=2)
     chart, data = plot_income(data)
     print(common.render(__file__, chart=chart))
     return data
