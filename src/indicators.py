@@ -38,7 +38,7 @@ def read_csv(name, measure, subject="TOT"):
         ["LOCATION", "INDICATOR", "TIME", "Value"],
     ]
     data["country"] = data.pop("LOCATION").map(translate.location.get)
-    data["year"] = pd.to_datetime(data.pop("TIME"), format="%Y", errors="coerce")
+    data["date"] = pd.to_datetime(data.pop("TIME"), format="%Y", errors="coerce")
     data["indicator"] = data.pop("INDICATOR")
     data["value"] = data.pop("Value")
     if measure.startswith("PC_") or measure == "AGRWTH":
@@ -60,18 +60,18 @@ def get_data():
         ],
         axis="rows",
     )
-    earliest_common_year = data.groupby(["country", "indicator"]).year.min().max()
-    data = data[(data.year >= earliest_common_year) & (data.year.dt.year <= 2021)]
-    data = data.pivot(index=["country", "year"], columns="indicator", values="value")
+    earliest_common_date = data.groupby(["country", "indicator"]).date.min().max()
+    data = data[(data.date >= earliest_common_date) & (data.date.dt.year <= 2021)]
+    data = data.pivot(index=["country", "date"], columns="indicator", values="value")
     data = data.reset_index()
     return data
 
 
 def plot(data):
-    nearest_year_selector = common.altair_selector("year")
+    nearest_date_selector = common.altair_selector("date")
     chart_base = alt.Chart(data).encode(
         x=alt.X(
-            field="year",
+            field="date",
             type="temporal",
             timeUnit="year",
             axis=alt.Axis(title=None, grid=True),
@@ -97,13 +97,13 @@ def plot(data):
             chart_base.transform_pivot(
                 "country",
                 value=indicator,
-                groupby=["year"],
+                groupby=["date"],
             )
             .transform_calculate(Indicator=repr(title))
             .mark_rule(color="gray")
             .encode(
                 opacity=alt.condition(
-                    nearest_year_selector,
+                    nearest_date_selector,
                     alt.value(1),
                     alt.value(0),
                 ),
@@ -113,7 +113,7 @@ def plot(data):
                     *[alt.Tooltip(c, type="quantitative", format=format) for c in countries],
                 ],
             )
-            .add_selection(nearest_year_selector)
+            .add_selection(nearest_date_selector)
         )
         chart = lines + tooltip_rule
         chart = chart.properties(
